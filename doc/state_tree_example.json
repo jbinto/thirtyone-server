@@ -1,0 +1,132 @@
+// This is an example of a state tree for the card game 31.
+//
+// The intention is to implement a reducer for this with Redux, 
+// one on the server side for global game state (Node/Socket.io). 
+//
+// A modified client state would be sent to each player, and
+// rendered in the browser (React/Socket.io).
+//
+// Disclaimer: Pretty new to functional programming. Will take
+// some time to get over OO. Need to read the Redux docs and
+// examples a bit more.
+
+
+
+// initial state
+// valid actions: player 0 must DEAL
+
+{ // SERVER
+  "game": "thirtyone",
+  "players": 2,
+  "state": "WAITING_FOR_PLAYER_TO_DEAL",
+}
+
+
+// player 0 sends DEAL action (e.g. player one clicks "Deal")
+// server "shuffles" a deck, populates:
+//  * hands (hands[0], hands[1])
+//    (cards represented as strings /[2-9JQKA][SCDH]/ -> trivial to parse)
+//  * piles
+//     * discard
+
+// valid actions: player 0 must DRAW_FROM_PILE or DRAW_FROM_DISCARD
+
+
+{ // SERVER
+  "game": "thirtyone",
+  "players": 2,
+  "state": "WAITING_FOR_PLAYER_TO_DRAW",
+  "currentPlayer": 0,
+  "hands": [
+    ["QS", "QC", "8C"],
+    ["2H", "7D", "3S"]
+  ],
+  "piles": {
+    "discard": [
+      ["AC"]
+    ],
+    "draw": [
+      ["3C", "4S", "5D", "..." ] // 52-(3+3+1) = 45 cards in the draw pile
+    ]
+  }
+}
+
+
+
+
+{ // CLIENT 
+  "game": "thirtyone",
+  "players": 2,
+  "state": "WAITING_FOR_PLAYER_TO_DRAW",
+  "currentPlayer": 0,
+  "discard": "AC",
+
+  // client specific below this point
+  "youArePlayer": 0,
+  "hand": [ // e.g. hands[0] or hands[1] depending on player
+    ["QS", "QC", "8C"],
+  ]
+}
+
+
+// if player 0 sends DRAW_FROM_PILE or DRAW_FROM_DISCARD
+// * top card in the [draw|discard] pile is moved to the hand (4 cards)
+// for example, drawing from the discard:
+
+// valid actions: player 0 must DISCARD (QS|QC|8C|AC)
+
+
+{ // SERVER
+  "game": "thirtyone",
+  "players": 2,
+  "state": "WAITING_FOR_PLAYER_TO_DRAW",
+  "currentPlayer": 0,
+  "hands": [
+    ["QS", "QC", "8C", "AC"],
+    ["2H", "7D", "3S"]
+  ],
+  "piles": {
+    "discard": [],
+    "draw": [
+      ["3C", "4S", "5D", "..." ] // 52-(3+3+1) = 45 cards in the draw pile
+    ]
+  }
+}
+
+
+
+
+{ // CLIENT 
+  "game": "thirtyone",
+  "players": 2,
+  "state": "WAITING_FOR_PLAYER_TO_DRAW",
+  "currentPlayer": 0,
+  "discard": "AC",
+
+  // client specific below this point
+  "youArePlayer": 0,
+  "hand": [ // e.g. hands[0] or hands[1] depending on player
+    ["QS", "QC", "8C"],
+  ]
+}
+
+
+// at game start, and after each discard,
+// evaluate hand for 31. If 31, game is over:
+
+// all players other than 31 winner lose a token.
+
+// valid actions: player 1 must DEAL
+
+{ // SERVER
+  "game": "thirtyone",
+  "players": 2,
+  "state": "THIRTY_ONE",
+  "currentPlayer": 0,
+  "hands": [
+    ["KC", "QC", "AC"],
+    ["2H", "7D", "3S"]
+  ],
+  "discard": null
+}
+
