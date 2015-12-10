@@ -78,3 +78,18 @@ export function startNewHand(state) {
 
   return nextState;
 }
+
+
+describe('player flow', () => {
+  it('lets the current player pick up from draw pile', () => {
+    expect(true).to.be.false();
+  });
+
+  it('lets the current player pick up from discard pile', () => {
+    expect(true).to.be.false();
+  });
+
+  it('does not let non-current player pick up', () => {
+    expect(true).to.be.false();
+  });
+});
