@@ -17,14 +17,12 @@ describe('pre-game', () => {
 
     let nextState = addPlayer(Map(), player1);
     expect(nextState).to.equal(fromJS({
-      playerCount: 1,
       players: ['abcd1234'],
       gameStarted: false,
     }));
 
     nextState = addPlayer(nextState, player2);
     expect(nextState).to.equal(fromJS({
-      playerCount: 2,
       players: ['abcd1234', 'efgh5678'],
       gameStarted: false,
     }));
@@ -32,7 +30,6 @@ describe('pre-game', () => {
 
   it('ignores adding players when game is started', () => {
     const state = fromJS({
-      playerCount: 2,
       players: ['a', 'b'],
       gameStarted: true,
     });
@@ -44,7 +41,6 @@ describe('pre-game', () => {
 
   it('will not start game if only 1 player', () => {
     const state = fromJS({
-      playerCount: 1,
       players: ['a'],
       gameStarted: false,
     });
@@ -55,7 +51,6 @@ describe('pre-game', () => {
 
   it('will start game if 2 players', () => {
     const state = fromJS({
-      playerCount: 2,
       players: ['a', 'b'],
       gameStarted: false,
     });
@@ -85,7 +80,6 @@ describe('startNewHand', () => {
 
     beforeEach(() => {
       state = fromJS({
-        playerCount: 2,
         players: ['a', 'b'],
         gameStarted: true,
       });
@@ -123,8 +117,6 @@ describe('startNewHand', () => {
     });
   });
 });
-
-
 
 describe('shuffle', () => {
   let original;

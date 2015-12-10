@@ -24,7 +24,6 @@ export function shuffle(deck) {
 export function addPlayer(state, playerId) {
   // Can't use ES6 destructuring here because we're not using JS objects
   // HINT: babel-plugin-extensible-destructuring
-  const playerCount = state.get('playerCount') || 0;
   const players = state.get('players') || List();
   const gameStarted = state.get('gameStarted') || false;
 
@@ -32,19 +31,17 @@ export function addPlayer(state, playerId) {
     return state;
   }
 
-  const newPlayerCount = playerCount + 1;
   const newPlayers = players.push(playerId);
 
   return fromJS({
     players: newPlayers,
-    playerCount: newPlayerCount,
     gameStarted,
   });
 }
 
 export function startGame(state) {
-  const playerCount = state.get('players').count();
-  if (playerCount > 1) {
+  const players = state.get('players');
+  if (players.count() > 1) {
     return state.set('gameStarted', true);
   }
 
@@ -52,7 +49,7 @@ export function startGame(state) {
 }
 
 export function startNewHand(state) {
-  if (state.get('handStarted')) {
+if (state.get('handStarted')) {
     return state;
   }
 
@@ -74,7 +71,7 @@ export function startNewHand(state) {
   });
 
   let nextState = state
-    .set('handStarted', true)
+  .set('handStarted', true)
     .set('currentPlayer', players.first())
     .set('piles', piles);
 
