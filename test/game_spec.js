@@ -1,11 +1,11 @@
 /* eslint new-cap: [2, {capIsNewExceptions: ["Map"]}] */
 /* (above: Make ESLint happy about Map() not being a real constructor) */
 
-/* globals describe, it */
+/* globals describe, it, beforeEach */
 
 import { expect } from 'chai';
 import { addPlayer, startGame, startNewHand, shuffle } from '../src/game';
-import { Map, List, fromJS } from 'immutable';
+import { Map, fromJS } from 'immutable';
 import _ from 'lodash';
 
 // n.b. BUG XXX HACK -- don't store computable data like playerCount
@@ -63,48 +63,58 @@ describe('pre-game', () => {
     const nextState = startGame(state);
     expect(nextState.get('gameStarted')).to.be.true();
   });
-
 });
 
 
-describe('one hand', () => {
-  it('can deal a 2 player game', () => {
-    const state = fromJS({
+describe('startNewHand 2 players', () => {
+  let state;
+  let nextState;
+  let piles;
+
+  beforeEach(() => {
+    state = fromJS({
       playerCount: 2,
       players: ['a', 'b'],
       gameStarted: true,
-    })
+    });
 
-    const nextState = startNewHand(state);
+    nextState = startNewHand(state);
 
+    piles = nextState.get('piles');
+  });
 
-    //console.log(`nextState: ${JSON.stringify(nextState)}`);
-
+  it('sets handInPlay and currentPlayer', () => {
     expect(nextState.get('handInPlay')).to.be.true();
     expect(nextState.get('currentPlayer')).to.equal(
       nextState.get('players').first()
     );
+  });
 
-    const piles = nextState.get('piles');
-
+  it('populates piles.hands with 2 arrays of 3 cards', () => {
+    const hands = piles.get('hands');
 
     expect(piles.count()).to.equal(3);
-    expect(piles.get('hands').count()).to.equal(2);
+    expect(hands.count()).to.equal(2);
 
+    expect(hands.first().count()).to.equal(3);
+    expect(hands.last().count()).to.equal(3);
+  });
 
-    console.log(`piles: ${piles.get('hands')}`);
-    expect(piles.get('discard').count()).to.equal(1);
-    expect(piles.get('hands').first().count()).to.equal(3);
-    expect(piles.get('hands').last().count()).to.equal(3);
-    expect(piles.get('draw').count()).to.equal(52 - 3 - 3 - 1); // 45
+  it('populates piles.discard with an array of 1 single card', () => {
+    const discard = piles.get('discard');
+    expect(discard.count()).to.equal(1);
+  });
+
+  it('populates piles.draw with the remaining cards', () => {
+    const draw = piles.get('draw');
+    expect(draw.count()).to.equal(52 - 3 - 3 - 1); // 45
   });
 });
 
 describe('shuffle', () => {
-  let original, copy;
-
+  let original;
   beforeEach(() => {
-    original = _.range(0,100);
+    original = _.range(0, 100);
   });
 
   it('shuffle doesnt mutate the array', () => {
@@ -114,9 +124,11 @@ describe('shuffle', () => {
   });
 
   it('shuffle does return a new order', () => {
+    // XXX Technically this test is non-determistic
+    // There is, theoretically, a 1/100! chance that the array shuffles
+    // back to the original.
+    // (100! = 93326215443944152681699238856266700490715968264381621468592963895217599993229915608941463976156518286253697920827223758251185210916864000000000000000000000000)
     const shuffled = shuffle(original);
     expect(shuffled).not.to.deep.equal(original);
   });
-
-
-})
+});

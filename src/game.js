@@ -5,11 +5,11 @@ import shuffleArray from 'shuffle-array';
 
 export const INITIAL_STATE = Map();
 
-const defaultDeck = [
+const getDefaultDeck = () => [
   '2s', '3s', '4s', '5s', '6s', '7s', '8s', '9s', '10s', 'Js', 'Qs', 'Ks', 'As',
   '2c', '3c', '4c', '5c', '6c', '7c', '8c', '9c', '10c', 'Jc', 'Qc', 'Kc', 'Ac',
   '2h', '3h', '4h', '5h', '6h', '7h', '8h', '9h', '10h', 'Jh', 'Qh', 'Kh', 'Ah',
-  '2d', '3d', '4d', '5d', '6d', '7d', '8d', '9d', '10d', 'Jd', 'Qd', 'Kd', 'Ad'
+  '2d', '3d', '4d', '5d', '6d', '7d', '8d', '9d', '10d', 'Jd', 'Qd', 'Kd', 'Ad',
 ];
 
 export function shuffle(deck) {
@@ -17,8 +17,6 @@ export function shuffle(deck) {
 }
 
 export function addPlayer(state, playerId) {
-  //console.log(`addPlayer: state=${JSON.stringify(state)}, playerID=${playerId}`);
-
   // Can't use ES6 destructuring here because we're not using JS objects
   const playerCount = state.get('playerCount') || 0;
   const players = state.get('players') || List();
@@ -49,12 +47,15 @@ export function startGame(state) {
 
 function deal(state) {
   // XXX what is the state scope here?? Should be thinking about subtrees..
-  const deck = defaultDeck;
-  const { playerCount, players, gameStarted } = state.toJS();
+  // XXX BUG: Don't deal if gameStarted already
+
+  const deck = getDefaultDeck();
+  const { playerCount } = state.toJS();
 
   const hands = [];
-  for (var i = 0; i < playerCount; i++) {
-    hands.push( [deck.shift(), deck.shift(), deck.shift()] );
+  for (let i = 0; i < playerCount; i++) {
+    const three = [deck.shift(), deck.shift(), deck.shift()];
+    hands.push(three);
   }
 
   const discard = deck.shift();
@@ -62,14 +63,11 @@ function deal(state) {
   const piles = fromJS({
     hands: hands,
     discard: [discard],
-    draw: deck
+    draw: deck,
   });
-
-  console.log(`dd: ${hands}`);
 
   const nextState = state.set('piles', piles); // XXX immutable?
   return nextState;
-
 }
 
 export function startNewHand(state) {
