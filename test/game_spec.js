@@ -4,8 +4,9 @@
 /* globals describe, it */
 
 import { expect } from 'chai';
-import { addPlayer, startGame, startNewHand } from '../src/game';
+import { addPlayer, startGame, startNewHand, shuffle } from '../src/game';
 import { Map, List, fromJS } from 'immutable';
+import _ from 'lodash';
 
 // n.b. BUG XXX HACK -- don't store computable data like playerCount
 
@@ -96,6 +97,26 @@ describe('one hand', () => {
     expect(piles.get('hands').first().count()).to.equal(3);
     expect(piles.get('hands').last().count()).to.equal(3);
     expect(piles.get('draw').count()).to.equal(52 - 3 - 3 - 1); // 45
-
   });
 });
+
+describe('shuffle', () => {
+  let original, copy;
+
+  beforeEach(() => {
+    original = _.range(0,100);
+  });
+
+  it('shuffle doesnt mutate the array', () => {
+    const copy = _.clone(original);
+    shuffle(original); // no-op
+    expect(original).to.deep.equal(copy);
+  });
+
+  it('shuffle does return a new order', () => {
+    const shuffled = shuffle(original);
+    expect(shuffled).not.to.deep.equal(original);
+  });
+
+
+})
