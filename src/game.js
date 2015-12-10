@@ -4,7 +4,7 @@ import { List, Map, fromJS } from 'immutable';
 
 export const INITIAL_STATE = Map();
 
-const deck = [
+const defaultDeck = [
   '2s', '3s', '4s', '5s', '6s', '7s', '8s', '9s', '10s', 'Js', 'Qs', 'Ks', 'As',
   '2c', '3c', '4c', '5c', '6c', '7c', '8c', '9c', '10c', 'Jc', 'Qc', 'Kc', 'Ac',
   '2h', '3h', '4h', '5h', '6h', '7h', '8h', '9h', '10h', 'Jh', 'Qh', 'Kh', 'Ah',
@@ -12,7 +12,7 @@ const deck = [
 ]
 
 export function addPlayer(state, playerId) {
-  console.log(`addPlayer: state=${JSON.stringify(state)}, playerID=${playerId}`);
+  //console.log(`addPlayer: state=${JSON.stringify(state)}, playerID=${playerId}`);
 
   // Can't use ES6 destructuring here because we're not using JS objects
   const playerCount = state.get('playerCount') || 0;
@@ -42,13 +42,37 @@ export function startGame(state) {
   return state;
 }
 
+function deal(state) {
+  // XXX what is the state scope here?? Should be thinking about subtrees..
+  const deck = defaultDeck;
+  const { playerCount, players, gameStarted } = state.toJS();
+
+  const hands = [];
+  for (var i = 0; i < playerCount; i++) {
+    hands.push( [deck.shift(), deck.shift(), deck.shift()] );
+  }
+
+  const discard = deck.shift();
+
+  const piles = fromJS({
+    hands: hands,
+    discard: [discard],
+    draw: deck
+  });
+
+  console.log(`dd: ${hands}`);
+
+  const nextState = state.set('piles', piles); // XXX immutable?
+  return nextState;
+
+}
+
 export function startNewHand(state) {
-  let nextState = state;
+  const players = state.get('players');
+  let nextState = state
+    .set('handInPlay', true)
+    .set('currentPlayer', players.first());
 
-  const firstPlayer = state.get('players').first();
-
-  nextState = nextState.set('handInPlay', true);
-  nextState = nextState.set('currentPlayer', firstPlayer);
-
+  nextState = deal(nextState);
   return nextState;
 }

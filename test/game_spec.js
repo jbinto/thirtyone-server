@@ -77,7 +77,7 @@ describe('one hand', () => {
     const nextState = startNewHand(state);
 
 
-    console.log(`nextState: ${JSON.stringify(nextState)}`);
+    //console.log(`nextState: ${JSON.stringify(nextState)}`);
 
     expect(nextState.get('handInPlay')).to.be.true();
     expect(nextState.get('currentPlayer')).to.equal(
@@ -85,11 +85,17 @@ describe('one hand', () => {
     );
 
     const piles = nextState.get('piles');
+
+
     expect(piles.count()).to.equal(3);
-    expect(piles.discard.count()).to.equal(1);
-    expect(piles.hands[0].count()).to.equal(3);
-    expect(piles.hands[1].count()).to.equal(3);
-    expect(piles.draw.count()).to.equal(52 - 3 - 3 - 1); // 45
+    expect(piles.get('hands').count()).to.equal(2);
+
+
+    console.log(`piles: ${piles.get('hands')}`);
+    expect(piles.get('discard').count()).to.equal(1);
+    expect(piles.get('hands').first().count()).to.equal(3);
+    expect(piles.get('hands').last().count()).to.equal(3);
+    expect(piles.get('draw').count()).to.equal(52 - 3 - 3 - 1); // 45
 
   });
 });
