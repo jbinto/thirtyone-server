@@ -143,3 +143,43 @@ describe('shuffle', () => {
     expect(shuffled).not.to.deep.equal(original);
   });
 });
+
+
+describe('player flow', () => {
+  it('lets the current player pick up from draw pile', () => {
+    const state = fromJS({
+      gameState: 'WAITING_PLAYER_DRAW',
+      players: ['a', 'b'],
+      piles: {
+        hands: [
+          ['2s', '3s', '4s'],
+          ['Qc', 'Kc', '10c'],
+        ],
+        discard: ['As'],
+        draw: ['5s', '6s', '7s'],
+      },
+    });
+
+    const player = 'a';
+    const nextState = drawCard(state, player);
+
+    expect(nextState.get('gameState')).to.equal('WAITING_PLAYER_DISCARD');
+    expect(nextState.get('currentPlayer')).to.equal('a');
+
+    const actualHand = nextState.getIn(['piles', 'hands', 0]);
+    const expectedHand = ['2s', '3s', '4s', '5s'];
+    expect(actualHand).to.deep.equal(expectedHand);
+
+    const actualDraw = nextState.getIn(['piles', 'draw']);
+    const expectedDraw = ['6s', '7s'];
+    expect(actualDraw).to.deep.equal(expectedDraw);
+  });
+
+  it('lets the current player pick up from discard pile', () => {
+    //expect(true).to.be.false();
+  });
+
+  it('does not let non-current player pick up', () => {
+    //expect(true).to.be.false();
+  });
+});
