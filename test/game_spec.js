@@ -66,50 +66,65 @@ describe('pre-game', () => {
 });
 
 
-describe('startNewHand 2 players', () => {
-  let state;
-  let nextState;
-  let piles;
-
-  beforeEach(() => {
-    state = fromJS({
-      playerCount: 2,
+describe('startNewHand', () => {
+  it('does nothing if handStarted', () => {
+    const state = fromJS({
       players: ['a', 'b'],
       gameStarted: true,
+      handStarted: true,
     });
 
-    nextState = startNewHand(state);
-
-    piles = nextState.get('piles');
+    const nextState = startNewHand(state);
+    expect(nextState).to.deep.equal(state);
   });
 
-  it('sets handInPlay and currentPlayer', () => {
-    expect(nextState.get('handInPlay')).to.be.true();
-    expect(nextState.get('currentPlayer')).to.equal(
-      nextState.get('players').first()
-    );
-  });
+  describe('2 player game', () => {
+    let state;
+    let nextState;
+    let piles;
 
-  it('populates piles.hands with 2 arrays of 3 cards', () => {
-    const hands = piles.get('hands');
+    beforeEach(() => {
+      state = fromJS({
+        playerCount: 2,
+        players: ['a', 'b'],
+        gameStarted: true,
+      });
 
-    expect(piles.count()).to.equal(3);
-    expect(hands.count()).to.equal(2);
+      nextState = startNewHand(state);
 
-    expect(hands.first().count()).to.equal(3);
-    expect(hands.last().count()).to.equal(3);
-  });
+      piles = nextState.get('piles');
+    });
 
-  it('populates piles.discard with an array of 1 single card', () => {
-    const discard = piles.get('discard');
-    expect(discard.count()).to.equal(1);
-  });
+    it('sets handStarted and currentPlayer', () => {
+      expect(nextState.get('handStarted')).to.be.true();
+      expect(nextState.get('currentPlayer')).to.equal(
+        nextState.get('players').first()
+      );
+    });
 
-  it('populates piles.draw with the remaining cards', () => {
-    const draw = piles.get('draw');
-    expect(draw.count()).to.equal(52 - 3 - 3 - 1); // 45
+    it('populates piles.hands with 2 arrays of 3 cards', () => {
+      const hands = piles.get('hands');
+
+      expect(piles.count()).to.equal(3);
+      expect(hands.count()).to.equal(2);
+
+      expect(hands.first().count()).to.equal(3);
+      expect(hands.last().count()).to.equal(3);
+    });
+
+    it('populates piles.discard with an array of 1 single card', () => {
+      const discard = piles.get('discard');
+      expect(discard.count()).to.equal(1);
+    });
+
+    it('populates piles.draw with the remaining cards', () => {
+      const draw = piles.get('draw');
+      expect(draw.count()).to.equal(52 - 3 - 3 - 1); // 45
+    });
   });
 });
+
+
 
 describe('shuffle', () => {
   let original;

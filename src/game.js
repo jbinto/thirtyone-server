@@ -52,6 +52,10 @@ export function startGame(state) {
 }
 
 export function startNewHand(state) {
+  if (state.get('handStarted')) {
+    return state;
+  }
+
   const players = state.get('players');
   const deck = getShuffledDeck();
   const hands = [];
@@ -70,7 +74,7 @@ export function startNewHand(state) {
   });
 
   let nextState = state
-    .set('handInPlay', true)
+    .set('handStarted', true)
     .set('currentPlayer', players.first())
     .set('piles', piles);
 
