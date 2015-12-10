@@ -13,13 +13,13 @@ const DEFAULT_DECK = [
   '2d', '3d', '4d', '5d', '6d', '7d', '8d', '9d', '10d', 'Jd', 'Qd', 'Kd', 'Ad',
 ];
 
-const getShuffledDeck = () => {
-  return shuffle(DEFAULT_DECK);
-};
-
 export function shuffle(deck) {
   return shuffleArray(deck, { copy: true });
 }
+
+const getShuffledDeck = () => {
+  return shuffle(DEFAULT_DECK);
+};
 
 export function addPlayer(state, playerId) {
   // Can't use ES6 destructuring here because we're not using JS objects
@@ -49,7 +49,7 @@ export function startGame(state) {
 }
 
 export function startNewHand(state) {
-if (state.get('handStarted')) {
+  if (state.get('handStarted')) {
     return state;
   }
 
@@ -70,8 +70,9 @@ if (state.get('handStarted')) {
     draw: deck,
   });
 
-  let nextState = state
-  .set('handStarted', true)
+  const nextState = state
+    .set('gameState', 'WAITING_PLAYER_DRAW')
+    .set('handStarted', true)
     .set('currentPlayer', players.first())
     .set('piles', piles);
 

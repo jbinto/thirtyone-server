@@ -89,6 +89,10 @@ describe('startNewHand', () => {
       piles = nextState.get('piles');
     });
 
+    it('sets gameState to WAITING_PLAYER_DRAW', () => {
+      expect(nextState.get('gameState')).to.equal('WAITING_PLAYER_DRAW');
+    });
+
     it('sets handStarted and currentPlayer', () => {
       expect(nextState.get('handStarted')).to.be.true();
       expect(nextState.get('currentPlayer')).to.equal(
