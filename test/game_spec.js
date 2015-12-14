@@ -1,11 +1,11 @@
-/* eslint new-cap: [2, {capIsNewExceptions: ["Map"]}] */
+/* eslint new-cap: [2, {capIsNewExceptions: ["Map", "List"]}] */
 /* (above: Make ESLint happy about Map() not being a real constructor) */
 
 /* globals describe, it, beforeEach */
 
 import { expect } from 'chai';
-import { addPlayer, startGame, startNewHand, shuffle } from '../src/game';
-import { Map, fromJS } from 'immutable';
+import { addPlayer, startGame, startNewHand, shuffle, drawCard } from '../src/game';
+import { Map, List, fromJS } from 'immutable';
 import _ from 'lodash';
 
 // n.b. BUG XXX HACK -- don't store computable data like playerCount
@@ -106,8 +106,8 @@ describe('startNewHand', () => {
       expect(piles.count()).to.equal(3);
       expect(hands.count()).to.equal(2);
 
-      expect(hands.first().count()).to.equal(3);
-      expect(hands.last().count()).to.equal(3);
+      expect(hands.get('a').count()).to.equal(3);
+      expect(hands.get('b').count()).to.equal(3);
     });
 
     it('populates piles.discard with an array of 1 single card', () => {
@@ -144,42 +144,43 @@ describe('shuffle', () => {
   });
 });
 
-
-describe('player flow', () => {
-  it('lets the current player pick up from draw pile', () => {
+describe('drawCard', () => {
+  describe('current player:', () => {
+    const currentPlayer = 'a';
     const state = fromJS({
       gameState: 'WAITING_PLAYER_DRAW',
+      currentPlayer: currentPlayer,
       players: ['a', 'b'],
       piles: {
-        hands: [
-          ['2s', '3s', '4s'],
-          ['Qc', 'Kc', '10c'],
-        ],
+        hands: {
+          a: ['2s', '3s', '4s'],
+          b: ['Qc', 'Kc', '10c'],
+        },
         discard: ['As'],
         draw: ['5s', '6s', '7s'],
       },
     });
+    const nextState = drawCard(state, 'a');
 
-    const player = 'a';
-    const nextState = drawCard(state, player);
 
-    expect(nextState.get('gameState')).to.equal('WAITING_PLAYER_DISCARD');
-    expect(nextState.get('currentPlayer')).to.equal('a');
+    it('sets gameState to WAITING_PLAYER_DISCARD', () => {
+      expect(nextState.get('gameState')).to.equal('WAITING_PLAYER_DISCARD');
+    });
 
-    const actualHand = nextState.getIn(['piles', 'hands', 0]);
-    const expectedHand = ['2s', '3s', '4s', '5s'];
-    expect(actualHand).to.deep.equal(expectedHand);
+    it('is still current players turn', () => {
+      expect(nextState.get('currentPlayer')).to.equal('a');
+    });
 
-    const actualDraw = nextState.getIn(['piles', 'draw']);
-    const expectedDraw = ['6s', '7s'];
-    expect(actualDraw).to.deep.equal(expectedDraw);
-  });
+    it('adds top draw card to the current players hand', () => {
+      const actualHand = nextState.getIn(['piles', 'hands', currentPlayer]);
+      const expectedHand = List(['2s', '3s', '4s', '5s']);
+      expect(actualHand).to.deep.equal(expectedHand);
+    });
 
-  it('lets the current player pick up from discard pile', () => {
-    //expect(true).to.be.false();
-  });
-
-  it('does not let non-current player pick up', () => {
-    //expect(true).to.be.false();
+    it('removes the top draw card from the deck', () => {
+      const actualDraw = nextState.getIn(['piles', 'draw']);
+      const expectedDraw = List(['6s', '7s']);
+      expect(actualDraw).to.deep.equal(expectedDraw);
+    });
   });
 });

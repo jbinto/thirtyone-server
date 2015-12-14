@@ -2,7 +2,7 @@
 
 import { List, Map, fromJS } from 'immutable';
 import shuffleArray from 'shuffle-array';
-import _ from 'lodash';
+// import _ from 'lodash';
 
 export const INITIAL_STATE = Map();
 
@@ -54,12 +54,12 @@ export function startNewHand(state) {
   }
 
   const players = state.get('players');
-  const deck = getShuffledDeck();
-  const hands = [];
+  const deck = getShuffledDeck(); // XXX should probably return an immutable list
+  let hands = Map();
 
-  _.times(players.count(), () => {
+  players.forEach((player) => {
     const threeCards = deck.splice(0, 3); // mutates `deck`
-    hands.push(threeCards);
+    hands = hands.set(player, List(threeCards));
   });
 
   const discard = deck.shift();
@@ -79,17 +79,16 @@ export function startNewHand(state) {
   return nextState;
 }
 
+export function drawCard(state, player) {
+  // NOTE: Immutable shift "returns a new List rather than the removed value"
+  const draw = state.getIn(['piles', 'draw']);
+  const newDraw = draw.shift();
 
-describe('player flow', () => {
-  it('lets the current player pick up from draw pile', () => {
-    expect(true).to.be.false();
-  });
+  const hand = state.getIn(['piles', 'hands', player]);
+  const newHand = hand.push(draw.first());
 
-  it('lets the current player pick up from discard pile', () => {
-    expect(true).to.be.false();
-  });
-
-  it('does not let non-current player pick up', () => {
-    expect(true).to.be.false();
-  });
-});
+  return state
+    .set('gameState', 'WAITING_PLAYER_DISCARD')
+    .setIn(['piles', 'draw'], newDraw)
+    .setIn(['piles', 'hands', player], newHand);
+}
