@@ -105,3 +105,16 @@ export function drawCard(state, player) {
     .setIn(['piles', 'draw'], newDraw)
     .setIn(['piles', 'hands', player], newHand);
 }
+
+
+export function discardCard(state, player, cardToDiscard) {
+  const hand = state.getIn(['piles', 'hands', player]);
+  const discardPile = state.getIn(['piles', 'discard']);
+
+  const newHand = hand.filterNot(card => card === cardToDiscard);
+  const newDiscardPile = discardPile.unshift(cardToDiscard);
+
+  return state
+    .setIn(['piles', 'discard'], newDiscardPile)
+    .setIn(['piles', 'hands', player], newHand);
+}

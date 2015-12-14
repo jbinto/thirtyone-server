@@ -4,7 +4,7 @@
 /* globals describe, it, beforeEach */
 
 import { expect } from 'chai';
-import { addPlayer, startGame, startNewHand, shuffle, drawCard } from '../src/game';
+import { addPlayer, startGame, startNewHand, shuffle, drawCard, discardCard } from '../src/game';
 import { Map, List, fromJS } from 'immutable';
 import _ from 'lodash';
 import * as states from '../src/game_states';
@@ -202,5 +202,46 @@ describe('drawCard', () => {
       const nextState = drawCard(state, 'a');
       expect(nextState).to.equal(state);
     });
+  });
+});
+
+describe('discardCard', () => {
+  const VALID_STATE = fromJS({
+    gameState: states.WAITING_FOR_PLAYER_TO_DISCARD,
+    currentPlayer: 'a',
+    players: ['a', 'b'],
+    piles: {
+      hands: {
+        a: ['2s', '3s', '4s', '5s'],
+        b: ['Qc', 'Kc', '10c'],
+      },
+      discard: ['As'],
+      draw: ['6s', '7s'],
+    },
+  });
+
+  describe('when current player', () => {
+    const state = VALID_STATE;
+    const player = state.get('currentPlayer');
+    const card = '3s';
+
+    const nextState = discardCard(state, player, card);
+
+    it('takes the card out of players hand', () => {
+      const newHand = nextState.getIn(['piles', 'hands', player]);
+      expect(newHand).to.equal(List(['2s', '4s', '5s']));
+    });
+
+    it('puts the card on top of discard', () => {
+      const newDiscard = nextState.getIn(['piles', 'discard']);
+      expect(newDiscard).to.equal(List(['3s', 'As']));
+    });
+  });
+
+  describe('when not current player', () => {
+
+  });
+  describe('when game is not WAITING_FOR_PLAYER_TO_DISCARD', () => {
+
   });
 });
