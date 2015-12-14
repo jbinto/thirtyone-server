@@ -7,6 +7,7 @@ import { expect } from 'chai';
 import { addPlayer, startGame, startNewHand, shuffle, drawCard } from '../src/game';
 import { Map, List, fromJS } from 'immutable';
 import _ from 'lodash';
+import * as states from '../src/game_states';
 
 // n.b. BUG XXX HACK -- don't store computable data like playerCount
 
@@ -89,8 +90,8 @@ describe('startNewHand', () => {
       piles = nextState.get('piles');
     });
 
-    it('sets gameState to WAITING_PLAYER_DRAW', () => {
-      expect(nextState.get('gameState')).to.equal('WAITING_PLAYER_DRAW');
+    it('sets gameState to WAITING_FOR_PLAYER_TO_DRAW', () => {
+      expect(nextState.get('gameState')).to.equal(states.WAITING_FOR_PLAYER_TO_DRAW);
     });
 
     it('sets handStarted and currentPlayer', () => {
@@ -145,26 +146,26 @@ describe('shuffle', () => {
 });
 
 describe('drawCard', () => {
-  describe('current player:', () => {
-    const currentPlayer = 'a';
-    const state = fromJS({
-      gameState: 'WAITING_PLAYER_DRAW',
-      currentPlayer: currentPlayer,
-      players: ['a', 'b'],
-      piles: {
-        hands: {
-          a: ['2s', '3s', '4s'],
-          b: ['Qc', 'Kc', '10c'],
-        },
-        discard: ['As'],
-        draw: ['5s', '6s', '7s'],
+  const VALID_STATE = fromJS({
+    gameState: states.WAITING_FOR_PLAYER_TO_DRAW,
+    currentPlayer: 'a',
+    players: ['a', 'b'],
+    piles: {
+      hands: {
+        a: ['2s', '3s', '4s'],
+        b: ['Qc', 'Kc', '10c'],
       },
-    });
+      discard: ['As'],
+      draw: ['5s', '6s', '7s'],
+    },
+  });
+
+  describe('when current player', () => {
+    const state = VALID_STATE;
     const nextState = drawCard(state, 'a');
 
-
-    it('sets gameState to WAITING_PLAYER_DISCARD', () => {
-      expect(nextState.get('gameState')).to.equal('WAITING_PLAYER_DISCARD');
+    it('sets gameState to WAITING_FOR_PLAYER_TO_DISCARD', () => {
+      expect(nextState.get('gameState')).to.equal(states.WAITING_FOR_PLAYER_TO_DISCARD);
     });
 
     it('is still current players turn', () => {
@@ -172,7 +173,7 @@ describe('drawCard', () => {
     });
 
     it('adds top draw card to the current players hand', () => {
-      const actualHand = nextState.getIn(['piles', 'hands', currentPlayer]);
+      const actualHand = nextState.getIn(['piles', 'hands', 'a']);
       const expectedHand = List(['2s', '3s', '4s', '5s']);
       expect(actualHand).to.deep.equal(expectedHand);
     });
@@ -181,6 +182,25 @@ describe('drawCard', () => {
       const actualDraw = nextState.getIn(['piles', 'draw']);
       const expectedDraw = List(['6s', '7s']);
       expect(actualDraw).to.deep.equal(expectedDraw);
+    });
+  });
+
+  describe('when not current player', () => {
+    const state = VALID_STATE.set(
+      'currentPlayer', 'b'
+    );
+    const nextState = drawCard(state, 'a');
+    it('does nothing', () => {
+      expect(nextState).to.equal(state);
+    });
+  });
+
+  describe('when game is not WAITING_FOR_PLAYER_TO_DRAW', () => {
+    it('does nothing', () => {
+      const state = VALID_STATE.set(
+        'gameState', states.WAITING_FOR_PLAYER_TO_DISCARD);
+      const nextState = drawCard(state, 'a');
+      expect(nextState).to.equal(state);
     });
   });
 });

@@ -2,6 +2,7 @@
 
 import { List, Map, fromJS } from 'immutable';
 import shuffleArray from 'shuffle-array';
+import * as states from './game_states';
 // import _ from 'lodash';
 
 export const INITIAL_STATE = Map();
@@ -71,7 +72,7 @@ export function startNewHand(state) {
   });
 
   const nextState = state
-    .set('gameState', 'WAITING_PLAYER_DRAW')
+    .set('gameState', states.WAITING_FOR_PLAYER_TO_DRAW)
     .set('handStarted', true)
     .set('currentPlayer', players.first())
     .set('piles', piles);
@@ -80,6 +81,18 @@ export function startNewHand(state) {
 }
 
 export function drawCard(state, player) {
+  const gameState = state.get('gameState');
+  if (gameState !== states.WAITING_FOR_PLAYER_TO_DRAW) {
+    // console.warn('drawCard() invariant failed: gameState != states.WAITING_FOR_PLAYER_TO_DRAW');
+    return state;
+  }
+
+  const currentPlayer = state.get('currentPlayer');
+  if (player !== currentPlayer) {
+    // console.warn('drawCard() invariant failed: player != currentPlayer');
+    return state;
+  }
+
   // NOTE: Immutable shift "returns a new List rather than the removed value"
   const draw = state.getIn(['piles', 'draw']);
   const newDraw = draw.shift();
@@ -88,7 +101,7 @@ export function drawCard(state, player) {
   const newHand = hand.push(draw.first());
 
   return state
-    .set('gameState', 'WAITING_PLAYER_DISCARD')
+    .set('gameState', states.WAITING_FOR_PLAYER_TO_DISCARD)
     .setIn(['piles', 'draw'], newDraw)
     .setIn(['piles', 'hands', player], newHand);
 }
