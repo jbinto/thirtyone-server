@@ -4,9 +4,10 @@
 /* globals describe, it, beforeEach */
 
 import { expect } from 'chai';
-import { fromJS } from 'immutable';
+import { fromJS, List } from 'immutable';
 import _ from 'lodash';
 import * as Utils from '../src/utils';
+import * as Constants from '../src/constants';
 
 describe('utils', () => {
   describe('getNextPlayer', () => {
@@ -62,6 +63,19 @@ describe('utils', () => {
       // (100! = 93326215443944152681699238856266700490715968264381621468592963895217599993229915608941463976156518286253697920827223758251185210916864000000000000000000000000)
       const shuffled = Utils.shuffle(original);
       expect(shuffled).not.to.deep.equal(original);
+    });
+  });
+
+  describe('getShuffledDeck', () => {
+    const deck = Utils.getShuffledDeck();
+    const defaultDeck = List(Constants.DEFAULT_DECK);
+
+    it('returns a different deck (ordering) than default', () => {
+      expect(deck).to.not.equal(defaultDeck);
+    });
+
+    it('when resorted, is same as the default deck', () => {
+      expect(deck.sort()).to.equal(defaultDeck.sort());
     });
   });
 });

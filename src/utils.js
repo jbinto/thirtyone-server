@@ -1,4 +1,7 @@
+/* eslint new-cap: [2, {capIsNewExceptions: ["Map", "List"]}] */
 import shuffleArray from 'shuffle-array';
+import { List } from 'immutable';
+import * as Constants from './constants';
 
 // Examples:
 //  getNextPlayer(['a', 'b'],      'a') => 'b'
@@ -33,4 +36,9 @@ export function advanceCurrentPlayer(state) {
 
 export function shuffle(deck) {
   return shuffleArray(deck, { copy: true });
+}
+
+export function getShuffledDeck() {
+  const shuffled = shuffle(Constants.DEFAULT_DECK);
+  return List(shuffled);
 }

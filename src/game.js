@@ -3,11 +3,7 @@
 import { List, Map, fromJS } from 'immutable';
 import * as States from './game_states';
 import * as Utils from './utils';
-import * as Constants from './constants';
-
-const getShuffledDeck = () => {
-  return Utils.shuffle(Constants.DEFAULT_DECK);
-};
+// import * as Constants from './constants';
 
 export function addPlayer(state, playerId) {
   // Can't use ES6 destructuring here because we're not using JS objects
@@ -42,15 +38,19 @@ export function startNewHand(state) {
   }
 
   const players = state.get('players');
-  const deck = getShuffledDeck(); // XXX should probably return an immutable list
+  let deck = Utils.getShuffledDeck();
   let hands = Map();
 
+  // deal 3 cards to each player
   players.forEach((player) => {
-    const threeCards = deck.splice(0, 3); // mutates `deck`
-    hands = hands.set(player, List(threeCards));
+    const hand = deck.take(3);
+    deck = deck.skip(3);
+    hands = hands.set(player, hand);
   });
 
-  const discard = deck.shift();
+  // show 1 discard
+  const discard = deck.first();
+  deck = deck.skip(1);
 
   const piles = fromJS({
     hands: hands,
