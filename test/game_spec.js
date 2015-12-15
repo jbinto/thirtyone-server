@@ -4,13 +4,12 @@
 /* globals describe, it, beforeEach */
 
 import { expect } from 'chai';
-import { addPlayer, startGame, startNewHand, shuffle, drawCard, discardCard } from '../src/game';
+import { addPlayer, startGame, startNewHand, drawCard, discardCard } from '../src/game';
 import { Map, List, fromJS } from 'immutable';
-import _ from 'lodash';
 import * as States from '../src/game_states';
 
-// n.b. BUG XXX HACK -- don't store computable data like playerCount
 
+// XXX refactor pre-game into own lib/spec
 describe('pre-game', () => {
   it('handles adding the first and second player', () => {
     const player1 = 'abcd1234';
@@ -61,7 +60,7 @@ describe('pre-game', () => {
   });
 });
 
-
+// XXX refactor startHand etc to own lib/spec called `hand`
 describe('startNewHand', () => {
   it('does nothing if handStarted', () => {
     const state = fromJS({
@@ -120,28 +119,6 @@ describe('startNewHand', () => {
       const draw = piles.get('draw');
       expect(draw.count()).to.equal(52 - 3 - 3 - 1); // 45
     });
-  });
-});
-
-describe('shuffle', () => {
-  let original;
-  beforeEach(() => {
-    original = _.range(0, 100);
-  });
-
-  it('shuffle doesnt mutate the array', () => {
-    const copy = _.clone(original);
-    shuffle(original); // no-op
-    expect(original).to.deep.equal(copy);
-  });
-
-  it('shuffle does return a new order', () => {
-    // XXX Technically this test is non-determistic
-    // There is, theoretically, a 1/100! chance that the array shuffles
-    // back to the original.
-    // (100! = 93326215443944152681699238856266700490715968264381621468592963895217599993229915608941463976156518286253697920827223758251185210916864000000000000000000000000)
-    const shuffled = shuffle(original);
-    expect(shuffled).not.to.deep.equal(original);
   });
 });
 
@@ -253,6 +230,8 @@ describe('discardCard', () => {
   describe('when not current player', () => {
 
   });
+
+  // XXX  refactor validation into different lib/spec
   describe('when game is not WAITING_FOR_PLAYER_TO_DISCARD', () => {
 
   });

@@ -1,3 +1,5 @@
+import shuffleArray from 'shuffle-array';
+
 // Examples:
 //  getNextPlayer(['a', 'b'],      'a') => 'b'
 //  getNextPlayer(['a', 'b', 'c'], 'c') => 'a'
@@ -27,4 +29,8 @@ export function advanceCurrentPlayer(state) {
   const nextPlayer = getNextPlayer(players.toArray(), currentPlayer);
 
   return state.set('currentPlayer', nextPlayer);
+}
+
+export function shuffle(deck) {
+  return shuffleArray(deck, { copy: true });
 }

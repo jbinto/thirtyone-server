@@ -1,12 +1,12 @@
 /* eslint new-cap: [2, {capIsNewExceptions: ["Map", "List"]}] */
 /* (above: Make ESLint happy about Map() not being a real constructor) */
 
-/* globals describe, it */
+/* globals describe, it, beforeEach */
 
 import { expect } from 'chai';
 import { fromJS } from 'immutable';
+import _ from 'lodash';
 import * as Utils from '../src/utils';
-
 
 describe('utils', () => {
   describe('getNextPlayer', () => {
@@ -40,6 +40,28 @@ describe('utils', () => {
       });
       const nextState = Utils.advanceCurrentPlayer(state);
       expect(nextState.get('currentPlayer')).to.equal('a');
+    });
+  });
+
+  describe('shuffle', () => {
+    let original;
+    beforeEach(() => {
+      original = _.range(0, 100);
+    });
+
+    it('shuffle doesnt mutate the array', () => {
+      const copy = _.clone(original);
+      Utils.shuffle(original); // no-op
+      expect(original).to.deep.equal(copy);
+    });
+
+    it('shuffle does return a new order', () => {
+      // XXX Technically this test is non-determistic
+      // There is, theoretically, a 1/100! chance that the array shuffles
+      // back to the original.
+      // (100! = 93326215443944152681699238856266700490715968264381621468592963895217599993229915608941463976156518286253697920827223758251185210916864000000000000000000000000)
+      const shuffled = Utils.shuffle(original);
+      expect(shuffled).not.to.deep.equal(original);
     });
   });
 });
