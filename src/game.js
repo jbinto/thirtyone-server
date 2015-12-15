@@ -2,7 +2,8 @@
 
 import { List, Map, fromJS } from 'immutable';
 import shuffleArray from 'shuffle-array';
-import * as states from './game_states';
+import * as States from './game_states';
+import * as Utils from './utils';
 // import _ from 'lodash';
 
 export const INITIAL_STATE = Map();
@@ -72,7 +73,7 @@ export function startNewHand(state) {
   });
 
   const nextState = state
-    .set('gameState', states.WAITING_FOR_PLAYER_TO_DRAW)
+    .set('gameState', States.WAITING_FOR_PLAYER_TO_DRAW)
     .set('handStarted', true)
     .set('currentPlayer', players.first())
     .set('piles', piles);
@@ -82,8 +83,8 @@ export function startNewHand(state) {
 
 export function drawCard(state, player) {
   const gameState = state.get('gameState');
-  if (gameState !== states.WAITING_FOR_PLAYER_TO_DRAW) {
-    // console.warn('drawCard() invariant failed: gameState != states.WAITING_FOR_PLAYER_TO_DRAW');
+  if (gameState !== States.WAITING_FOR_PLAYER_TO_DRAW) {
+    // console.warn('drawCard() invariant failed: gameState != States.WAITING_FOR_PLAYER_TO_DRAW');
     return state;
   }
 
@@ -101,7 +102,7 @@ export function drawCard(state, player) {
   const newHand = hand.push(draw.first());
 
   return state
-    .set('gameState', states.WAITING_FOR_PLAYER_TO_DISCARD)
+    .set('gameState', States.WAITING_FOR_PLAYER_TO_DISCARD)
     .setIn(['piles', 'draw'], newDraw)
     .setIn(['piles', 'hands', player], newHand);
 }
@@ -114,7 +115,9 @@ export function discardCard(state, player, cardToDiscard) {
   const newHand = hand.filterNot(card => card === cardToDiscard);
   const newDiscardPile = discardPile.unshift(cardToDiscard);
 
-  return state
+  const nextState = Utils.advanceCurrentPlayer(state);
+
+  return nextState
     .setIn(['piles', 'discard'], newDiscardPile)
     .setIn(['piles', 'hands', player], newHand);
 }

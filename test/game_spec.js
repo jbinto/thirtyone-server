@@ -7,7 +7,7 @@ import { expect } from 'chai';
 import { addPlayer, startGame, startNewHand, shuffle, drawCard, discardCard } from '../src/game';
 import { Map, List, fromJS } from 'immutable';
 import _ from 'lodash';
-import * as states from '../src/game_states';
+import * as States from '../src/game_states';
 
 // n.b. BUG XXX HACK -- don't store computable data like playerCount
 
@@ -91,7 +91,7 @@ describe('startNewHand', () => {
     });
 
     it('sets gameState to WAITING_FOR_PLAYER_TO_DRAW', () => {
-      expect(nextState.get('gameState')).to.equal(states.WAITING_FOR_PLAYER_TO_DRAW);
+      expect(nextState.get('gameState')).to.equal(States.WAITING_FOR_PLAYER_TO_DRAW);
     });
 
     it('sets handStarted and currentPlayer', () => {
@@ -147,7 +147,7 @@ describe('shuffle', () => {
 
 describe('drawCard', () => {
   const VALID_STATE = fromJS({
-    gameState: states.WAITING_FOR_PLAYER_TO_DRAW,
+    gameState: States.WAITING_FOR_PLAYER_TO_DRAW,
     currentPlayer: 'a',
     players: ['a', 'b'],
     piles: {
@@ -165,7 +165,7 @@ describe('drawCard', () => {
     const nextState = drawCard(state, 'a');
 
     it('sets gameState to WAITING_FOR_PLAYER_TO_DISCARD', () => {
-      expect(nextState.get('gameState')).to.equal(states.WAITING_FOR_PLAYER_TO_DISCARD);
+      expect(nextState.get('gameState')).to.equal(States.WAITING_FOR_PLAYER_TO_DISCARD);
     });
 
     it('is still current players turn', () => {
@@ -195,10 +195,11 @@ describe('drawCard', () => {
     });
   });
 
+  // XXX refactor this into a general purpose state-validation spec
   describe('when game is not WAITING_FOR_PLAYER_TO_DRAW', () => {
     it('does nothing', () => {
       const state = VALID_STATE.set(
-        'gameState', states.WAITING_FOR_PLAYER_TO_DISCARD);
+        'gameState', States.WAITING_FOR_PLAYER_TO_DISCARD);
       const nextState = drawCard(state, 'a');
       expect(nextState).to.equal(state);
     });
@@ -207,7 +208,7 @@ describe('drawCard', () => {
 
 describe('discardCard', () => {
   const VALID_STATE = fromJS({
-    gameState: states.WAITING_FOR_PLAYER_TO_DISCARD,
+    gameState: States.WAITING_FOR_PLAYER_TO_DISCARD,
     currentPlayer: 'a',
     players: ['a', 'b'],
     piles: {
@@ -236,6 +237,17 @@ describe('discardCard', () => {
       const newDiscard = nextState.getIn(['piles', 'discard']);
       expect(newDiscard).to.equal(List(['3s', 'As']));
     });
+
+    it('advances to the next player', () => {
+      const newPlayer = nextState.get('currentPlayer');
+      expect(newPlayer).to.equal('b');
+    });
+
+      // // XXX: what if buddy gets 31 here??
+      // it('sets game state to WAITING_FOR_PLAYER_TO_DRAW', () => {
+      //   const newGameState = nextState.get('gameState');
+      //   expect(newGameState).to.equal(States.WAITING_FOR_PLAYER_TO_DRAW);
+      // });
   });
 
   describe('when not current player', () => {
