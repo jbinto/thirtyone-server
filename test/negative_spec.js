@@ -60,6 +60,11 @@ describe('negative', () => {
       expect(nextState).to.equal(state);
     });
 
+    it('drawDiscard does nothing', () => {
+      const nextState = drawCard(state, wrongPlayer);
+      expect(nextState).to.equal(state);
+    });
+
     it('discardCard does nothing', () => {
       const nextState = discardCard(state, wrongPlayer, 'Qs');
       expect(nextState).to.equal(state);
@@ -70,12 +75,17 @@ describe('negative', () => {
     const badState = fromJS({
       gameState: 'WAITING_FOR_POKER',
       currentPlayer: 'a',
-      players: ['a', 'b'],
+      players: ['a', 'b']
     });
     const player = 'a';
 
     it('drawCard does nothing', () => {
       const nextState = drawCard(badState, player);
+      expect(nextState).to.equal(badState);
+    });
+
+    it('drawDiscard does nothing', () => {
+      const nextState = drawDiscard(badState, player);
       expect(nextState).to.equal(badState);
     });
 
