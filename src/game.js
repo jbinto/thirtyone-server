@@ -74,7 +74,7 @@ function draw(state, player, whichPile) {
   const valid = Validate.validate({
     state,
     player,
-    expectedState: 'WAITING_FOR_PLAYER_TO_DRAW',
+    expectedState: States.WAITING_FOR_PLAYER_TO_DRAW,
   });
   if (!valid) {
     return state;
@@ -111,7 +111,7 @@ export function discardCard(state, player, cardToDiscard) {
   const valid = Validate.validate({
     state,
     player,
-    expectedState: 'WAITING_FOR_PLAYER_TO_DISCARD',
+    expectedState: States.WAITING_FOR_PLAYER_TO_DISCARD,
   });
   if (!valid) {
     return state;

@@ -6,6 +6,7 @@
 import { expect } from 'chai';
 import { addPlayer, startGame, startNewHand, drawCard, drawDiscard, discardCard } from '../src/game';
 import { fromJS } from 'immutable';
+import * as States from '../src/game_states';
 
 describe('negative', () => {
   describe('(-) pre-game', () => {
@@ -49,7 +50,7 @@ describe('negative', () => {
 
   describe('(-) when not current player', () => {
     const state = fromJS({
-      gameState: 'WAITING_FOR_PLAYER_TO_DRAW',
+      gameState: States.WAITING_FOR_PLAYER_TO_DRAW,
       currentPlayer: 'a',
       players: ['a', 'b'],
     });
@@ -97,7 +98,7 @@ describe('negative', () => {
 
   describe('(-) when discard pile is empty', () => {
     const state = fromJS({
-      gameState: 'WAITING_FOR_PLAYER_TO_DRAW',
+      gameState: States.WAITING_FOR_PLAYER_TO_DRAW,
       currentPlayer: 'a',
       players: ['a', 'b'],
       piles: {
