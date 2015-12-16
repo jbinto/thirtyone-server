@@ -3,6 +3,9 @@
 
 /* globals describe, it, beforeEach */
 
+// NOTE: To keep this file readable, only put happy-case tests here.
+// For now, negative/validation specs are in `negative_spec.js`
+
 import { expect } from 'chai';
 import { addPlayer, startGame, startNewHand, drawCard, drawDiscard, discardCard } from '../src/game';
 import { Map, List, fromJS } from 'immutable';
@@ -198,5 +201,40 @@ describe('discardCard', () => {
       const newGameState = nextState.get('gameState');
       expect(newGameState).to.equal(States.WAITING_FOR_PLAYER_TO_DRAW);
     });
+  });
+});
+
+describe('thirtyOne', () => {
+  const state = fromJS({
+    gameState: States.WAITING_FOR_PLAYER_TO_DISCARD,
+    currentPlayer: 'a',
+    players: ['a', 'b'],
+    piles: {
+      hands: {
+        a: ['10s', 'Js', '4s', 'As'],
+        b: ['Qc', 'Kc', '10c'],
+      },
+      discard: ['As'],
+      draw: ['6s', '7s'],
+    },
+  });
+  const player = 'a';
+
+  it('is declared after discard when hand scores 31 points', () => {
+    const nextState = discardCard(state, player, '4s');
+    const expectedState = fromJS({
+      gameState: States.THIRTY_ONE,
+      winner: 'a',
+      players: ['a', 'b'],
+      piles: {
+        hands: {
+          a: ['10s', 'Js', 'As'],
+          b: ['Qc', 'Kc', '10c'],
+        },
+        discard: ['4s', 'As'],
+        draw: ['6s', '7s'],
+      },
+    });
+    expect(nextState).to.equal(expectedState);
   });
 });
