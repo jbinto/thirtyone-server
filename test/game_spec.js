@@ -28,27 +28,6 @@ describe('pre-game', () => {
     }));
   });
 
-  it('ignores adding players when game is started', () => {
-    const state = fromJS({
-      players: ['a', 'b'],
-      gameStarted: true,
-    });
-
-    const nextState = addPlayer(state, 'c');
-
-    expect(nextState).to.equal(state);
-  });
-
-  it('will not start game if only 1 player', () => {
-    const state = fromJS({
-      players: ['a'],
-      gameStarted: false,
-    });
-
-    const nextState = startGame(state);
-    expect(nextState).to.equal(state);
-  });
-
   it('will start game if 2 players', () => {
     const state = fromJS({
       players: ['a', 'b'],
@@ -62,17 +41,6 @@ describe('pre-game', () => {
 
 // XXX refactor startHand etc to own lib/spec called `hand`
 describe('startNewHand', () => {
-  it('does nothing if handStarted', () => {
-    const state = fromJS({
-      players: ['a', 'b'],
-      gameStarted: true,
-      handStarted: true,
-    });
-
-    const nextState = startNewHand(state);
-    expect(nextState).to.deep.equal(state);
-  });
-
   describe('2 player game', () => {
     let state;
     let nextState;
@@ -161,26 +129,6 @@ describe('drawCard', () => {
       expect(actualDraw).to.deep.equal(expectedDraw);
     });
   });
-
-  describe('when not current player', () => {
-    const state = VALID_STATE.set(
-      'currentPlayer', 'b'
-    );
-    const nextState = drawCard(state, 'a');
-    it('does nothing', () => {
-      expect(nextState).to.equal(state);
-    });
-  });
-
-  // XXX refactor this into a general purpose state-validation spec
-  describe('when game is not WAITING_FOR_PLAYER_TO_DRAW', () => {
-    it('does nothing', () => {
-      const state = VALID_STATE.set(
-        'gameState', States.WAITING_FOR_PLAYER_TO_DISCARD);
-      const nextState = drawCard(state, 'a');
-      expect(nextState).to.equal(state);
-    });
-  });
 });
 
 describe('discardCard', () => {
@@ -224,26 +172,6 @@ describe('discardCard', () => {
     it('sets game state to WAITING_FOR_PLAYER_TO_DRAW', () => {
       const newGameState = nextState.get('gameState');
       expect(newGameState).to.equal(States.WAITING_FOR_PLAYER_TO_DRAW);
-    });
-  });
-
-  describe('when not current player', () => {
-    const state = VALID_STATE.set(
-      'currentPlayer', 'b'
-    );
-    const nextState = discardCard(state, 'a', 'Qs');
-    it('does nothing', () => {
-      expect(nextState).to.equal(state);
-    });
-  });
-
-  // XXX  refactor validation into different lib/spec
-  describe('when game is not WAITING_FOR_PLAYER_TO_DISCARD', () => {
-    it('does nothing', () => {
-      const state = VALID_STATE.set(
-        'gameState', States.WAITING_FOR_PLAYER_TO_DRAW);
-      const nextState = discardCard(state, 'a', 'Qs');
-      expect(nextState).to.equal(state);
     });
   });
 });
