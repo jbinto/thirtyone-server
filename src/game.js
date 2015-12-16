@@ -98,6 +98,12 @@ export function drawCard(state, player) {
 }
 
 export function drawDiscard(state, player) {
+  // EDGE CASE: do nothing if discard pile is empty
+  const discard = state.getIn(['piles', 'discard']);
+  if (discard.count() === 0) {
+    return state;
+  }
+
   return draw(state, player, 'discard');
 }
 

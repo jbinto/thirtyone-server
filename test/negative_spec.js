@@ -4,7 +4,7 @@
 /* globals describe, it, beforeEach */
 
 import { expect } from 'chai';
-import { addPlayer, startGame, startNewHand, drawCard, discardCard } from '../src/game';
+import { addPlayer, startGame, startNewHand, drawCard, drawDiscard, discardCard } from '../src/game';
 import { fromJS } from 'immutable';
 
 describe('negative', () => {
@@ -82,6 +82,28 @@ describe('negative', () => {
     it('discardCard does nothing', () => {
       const nextState = discardCard(badState, player, 'Qs');
       expect(nextState).to.equal(badState);
+    });
+  });
+
+  describe('(-) when discard pile is empty', () => {
+    const state = fromJS({
+      gameState: 'WAITING_FOR_PLAYER_TO_DRAW',
+      currentPlayer: 'a',
+      players: ['a', 'b'],
+      piles: {
+        hands: {
+          a: ['2s', '3s', '4s'],
+          b: ['Qc', 'Kc', '10c'],
+        },
+        discard: [],
+        draw: ['5s', '6s', '7s'],
+      },
+    });
+    const player = 'a';
+
+    it('drawDiscard does nothing', () => {
+      const nextState = drawDiscard(state, player);
+      expect(nextState).to.equal(state);
     });
   });
 });
