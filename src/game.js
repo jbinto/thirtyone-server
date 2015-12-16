@@ -4,6 +4,7 @@ import { List, Map, fromJS } from 'immutable';
 import * as States from './game_states';
 import * as Utils from './utils';
 // import * as Constants from './constants';
+import * as Validate from './validate';
 
 export function addPlayer(state, playerId) {
   // Can't use ES6 destructuring here because we're not using JS objects
@@ -68,15 +69,12 @@ export function startNewHand(state) {
 }
 
 export function drawCard(state, player) {
-  const gameState = state.get('gameState');
-  if (gameState !== States.WAITING_FOR_PLAYER_TO_DRAW) {
-    // console.warn('drawCard() invariant failed: gameState != States.WAITING_FOR_PLAYER_TO_DRAW');
-    return state;
-  }
-
-  const currentPlayer = state.get('currentPlayer');
-  if (player !== currentPlayer) {
-    // console.warn('drawCard() invariant failed: player != currentPlayer');
+  const valid = Validate.validate({
+    state,
+    player,
+    expectedState: 'WAITING_FOR_PLAYER_TO_DRAW',
+  });
+  if (!valid) {
     return state;
   }
 
@@ -95,16 +93,12 @@ export function drawCard(state, player) {
 
 
 export function discardCard(state, player, cardToDiscard) {
-  // XXX dry this up with a validation module
-  const gameState = state.get('gameState');
-  if (gameState !== States.WAITING_FOR_PLAYER_TO_DISCARD) {
-    // console.warn('drawCard() invariant failed: gameState != States.WAITING_FOR_PLAYER_TO_DRAW');
-    return state;
-  }
-
-  const currentPlayer = state.get('currentPlayer');
-  if (player !== currentPlayer) {
-    // console.warn('drawCard() invariant failed: player != currentPlayer');
+  const valid = Validate.validate({
+    state,
+    player,
+    expectedState: 'WAITING_FOR_PLAYER_TO_DISCARD',
+  });
+  if (!valid) {
     return state;
   }
 
