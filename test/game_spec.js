@@ -220,11 +220,11 @@ describe('discardCard', () => {
       expect(newPlayer).to.equal('b');
     });
 
-      // // XXX: what if buddy gets 31 here??
-      // it('sets game state to WAITING_FOR_PLAYER_TO_DRAW', () => {
-      //   const newGameState = nextState.get('gameState');
-      //   expect(newGameState).to.equal(States.WAITING_FOR_PLAYER_TO_DRAW);
-      // });
+    // XXX: what if buddy gets 31 here??
+    it('sets game state to WAITING_FOR_PLAYER_TO_DRAW', () => {
+      const newGameState = nextState.get('gameState');
+      expect(newGameState).to.equal(States.WAITING_FOR_PLAYER_TO_DRAW);
+    });
   });
 
   describe('when not current player', () => {

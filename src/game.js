@@ -104,6 +104,7 @@ export function discardCard(state, player, cardToDiscard) {
   const nextState = Utils.advanceCurrentPlayer(state);
 
   return nextState
+    .set('gameState', States.WAITING_FOR_PLAYER_TO_DRAW)
     .setIn(['piles', 'discard'], newDiscardPile)
     .setIn(['piles', 'hands', player], newHand);
 }
