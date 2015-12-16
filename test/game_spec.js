@@ -4,7 +4,7 @@
 /* globals describe, it, beforeEach */
 
 import { expect } from 'chai';
-import { addPlayer, startGame, startNewHand, drawCard, discardCard } from '../src/game';
+import { addPlayer, startGame, startNewHand, drawCard, drawDiscard, discardCard } from '../src/game';
 import { Map, List, fromJS } from 'immutable';
 import * as States from '../src/game_states';
 
@@ -105,7 +105,7 @@ describe('drawCard', () => {
     },
   });
 
-  describe('when current player', () => {
+  describe('from draw pile', () => {
     const state = VALID_STATE;
     const nextState = drawCard(state, 'a');
 
@@ -126,6 +126,31 @@ describe('drawCard', () => {
     it('removes the top draw card from the deck', () => {
       const actualDraw = nextState.getIn(['piles', 'draw']);
       const expectedDraw = List(['6s', '7s']);
+      expect(actualDraw).to.deep.equal(expectedDraw);
+    });
+  });
+
+  describe('from discard pile', () => {
+    const state = VALID_STATE;
+    const nextState = drawDiscard(state, 'a');
+
+    it('sets gameState to WAITING_FOR_PLAYER_TO_DISCARD', () => {
+      expect(nextState.get('gameState')).to.equal(States.WAITING_FOR_PLAYER_TO_DISCARD);
+    });
+
+    it('is still current players turn', () => {
+      expect(nextState.get('currentPlayer')).to.equal('a');
+    });
+
+    it('adds top discard card to the current players hand', () => {
+      const actualHand = nextState.getIn(['piles', 'hands', 'a']);
+      const expectedHand = List(['2s', '3s', '4s', 'As']);
+      expect(actualHand).to.deep.equal(expectedHand);
+    });
+
+    it('removes the top card from the discard pile', () => {
+      const actualDraw = nextState.getIn(['piles', 'discard']);
+      const expectedDraw = List([]);
       expect(actualDraw).to.deep.equal(expectedDraw);
     });
   });

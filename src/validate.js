@@ -1,8 +1,8 @@
 
 function warn(msg) {
-  return;
-  console.warn(msg);
-  console.trace();
+  return msg;
+  // console.warn(msg);
+  // console.trace();
 }
 
 export function isCorrectPlayer(state, player) {

@@ -68,7 +68,9 @@ export function startNewHand(state) {
   return nextState;
 }
 
-export function drawCard(state, player) {
+// Refactored common code from drawCard and drawDiscard
+// Valid args for `whichPile`: `draw`, `discard`
+function draw(state, player, whichPile) {
   const valid = Validate.validate({
     state,
     player,
@@ -79,18 +81,25 @@ export function drawCard(state, player) {
   }
 
   // NOTE: Immutable shift "returns a new List rather than the removed value"
-  const draw = state.getIn(['piles', 'draw']);
-  const newDraw = draw.shift();
+  const pile = state.getIn(['piles', whichPile]);
+  const newPile = pile.shift();
 
   const hand = state.getIn(['piles', 'hands', player]);
-  const newHand = hand.push(draw.first());
+  const newHand = hand.push(pile.first());
 
   return state
     .set('gameState', States.WAITING_FOR_PLAYER_TO_DISCARD)
-    .setIn(['piles', 'draw'], newDraw)
+    .setIn(['piles', whichPile], newPile)
     .setIn(['piles', 'hands', player], newHand);
 }
 
+export function drawCard(state, player) {
+  return draw(state, player, 'draw');
+}
+
+export function drawDiscard(state, player) {
+  return draw(state, player, 'discard');
+}
 
 export function discardCard(state, player, cardToDiscard) {
   const valid = Validate.validate({
