@@ -1,5 +1,9 @@
 # Notes
 
+## 2015-12-16 9:30
+
+* `WAITING_FOR_PLAYER_TO_DRAW` will have to become `WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK`
+
 ## 2015-12-16 9:00
 
 * Not sure it was really worth writing Redux style functional reducers on the server side. It has been an eye opening exercise for sure, but my FP skills are pretty rudimentary and I feel like I'm going backwards in a lot of ways. Every function I write needs **the state of the entire world** and a few more arguments on top of that. I sort of ache for a `struct` or a stateful `class` to hide all of this. I understand, sort of, conceptually, that currying could help with my "too many arguments" problem, but not well enough to make a difference.
