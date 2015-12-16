@@ -228,11 +228,22 @@ describe('discardCard', () => {
   });
 
   describe('when not current player', () => {
-
+    const state = VALID_STATE.set(
+      'currentPlayer', 'b'
+    );
+    const nextState = discardCard(state, 'a', 'Qs');
+    it('does nothing', () => {
+      expect(nextState).to.equal(state);
+    });
   });
 
   // XXX  refactor validation into different lib/spec
   describe('when game is not WAITING_FOR_PLAYER_TO_DISCARD', () => {
-
+    it('does nothing', () => {
+      const state = VALID_STATE.set(
+        'gameState', States.WAITING_FOR_PLAYER_TO_DRAW);
+      const nextState = discardCard(state, 'a', 'Qs');
+      expect(nextState).to.equal(state);
+    });
   });
 });

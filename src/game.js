@@ -95,6 +95,19 @@ export function drawCard(state, player) {
 
 
 export function discardCard(state, player, cardToDiscard) {
+  // XXX dry this up with a validation module
+  const gameState = state.get('gameState');
+  if (gameState !== States.WAITING_FOR_PLAYER_TO_DISCARD) {
+    // console.warn('drawCard() invariant failed: gameState != States.WAITING_FOR_PLAYER_TO_DRAW');
+    return state;
+  }
+
+  const currentPlayer = state.get('currentPlayer');
+  if (player !== currentPlayer) {
+    // console.warn('drawCard() invariant failed: player != currentPlayer');
+    return state;
+  }
+
   const hand = state.getIn(['piles', 'hands', player]);
   const discardPile = state.getIn(['piles', 'discard']);
 
