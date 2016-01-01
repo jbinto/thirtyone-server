@@ -1,8 +1,13 @@
 # jbinto/thirtyone-server
 
+[![Build Status](https://travis-ci.org/jbinto/thirtyone-server.svg?branch=master)](https://travis-ci.org/jbinto/thirtyone-server)
+
 ## Project status
 
 WIP (c. 12/2015)
+
+Server - 60% implemented
+Client - 0% implemented
 
 ## Overview
 
