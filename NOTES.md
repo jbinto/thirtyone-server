@@ -1,5 +1,67 @@
 # Notes
 
+## 2015-12-31 23:00
+
+Thinking about a refactor where we only use the minimal state needed for each action.
+
+For example:
+
+--
+
+`drawCard(state, player) // => newState` would become
+
+`drawCard(hand, drawPile) // => { hand, drawPile }`
+
+--
+
+`discardCard(state, player, card)`
+
+`discardCard(hand, discardPile, card) // => { hand, discardPile }`
+
+--
+
+Currently, `drawCard` and `discardCard` both handle their respective actions (i.e. shifting cards from one pile to another), *and* return a modified global/immutable 31 state object.
+
+I believe that the Redux reducer should be the one to handle all of that (low-level) state concatenation.
+
+What about `startGame`, `addPlayer`, etc? They might need a bigger snapshot of state.
+
+`startGame` just basically sets up the global state tree boilerplate. It seems more of a top-level Redux reducer concern.
+
+`addPlayer`, if extracted to be more "functional" would just essentially become `Array.prototype.push`. The complexity here, again, is in manipulating the custom state tree. (We're doing redux work here without having yet included redux.)
+
+--
+
+It seems like it would make sense to refactor `hand` out from the `game` module.
+
+--
+
+Reducer composition: this is the Redux feature where you can have your state tree composed of nested reducer functions, e.g. to generate this state subtree:
+
+```
+piles: {
+  hands: {[...]}
+  draw: [..]
+  discard: ...  
+}
+```
+
+We would write a `piles` reducer: it would take an action and the initial `piles` state, and return the modified `piles`.
+
+Then, the root reducer would be responsible for the concatenation/state tree manipulations, and we could - maybe - just generate that by using Redux `combineReducers` [(example)](http://rackt.org/redux/docs/api/combineReducers.html).
+
+Aha.
+
+The wrench in the works here is `gameState`, which lives at *the top of the state tree*. How can the `piles` reducer handle this?
+
+Does this mean that we'd have another reducer that just handles `gameState`, which gets called on every `store.dispatch(...)`?
+
+Let's say we did. What does this mean for validation of actions? Right now, since I just have a single, massive `state => state` function for each discrete game action, I can validate "at the top".
+
+What if I was using reducers? Who would be responsible?
+
+I could extract some sort of `validateAction` and repeatedly call it at each level... or (and I think this makes more sense) **I could make a Redux middleware** which refuses to dispatch the action if the current state and the request action are incompatible.
+
 ## 2015-12-16 9:30
 
 * `WAITING_FOR_PLAYER_TO_DRAW` will have to become `WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK`
