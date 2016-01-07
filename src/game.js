@@ -185,8 +185,14 @@ export function discardCard(state, player, cardToDiscard) {
   if (!valid) {
     return state;
   }
-
   const hand = state.getIn(['piles', 'hands', player]);
+
+  // bail out if player doesn't actually have this card
+  const hasCardInHand = hand.includes(cardToDiscard);
+  if (!hasCardInHand) {
+    return state;
+  }
+
   const discardPile = state.getIn(['piles', 'discard']);
 
   const newHand = hand.filterNot(card => card === cardToDiscard);
