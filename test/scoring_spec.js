@@ -37,6 +37,19 @@ describe('parseCard', () => {
       name: 'A', rank: 11, suit: 's',
     }));
   });
+
+  it('returns undefined for unparsable cards', () => {
+    const badCards = [
+      '1s',
+      '11s',
+      '3q',
+      'Qq',
+    ];
+
+    badCards.forEach((card) => {
+      expect(parseCard(card)).to.equal(undefined);
+    });
+  });
 });
 
 describe('scoreHand', () => {
