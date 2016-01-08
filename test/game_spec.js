@@ -212,37 +212,37 @@ describe('discardCard', () => {
   })
 });
 
-// describe('thirtyOne', () => {
-//   const state = fromJS({
-//     gameState: States.WAITING_FOR_PLAYER_TO_DISCARD,
-//     currentPlayer: 'a',
-//     players: ['a', 'b'],
-//     piles: {
-//       hands: {
-//         a: ['10s', 'Js', '4s', 'As'],
-//         b: ['Qc', 'Kc', '10c'],
-//       },
-//       discard: ['As'],
-//       draw: ['6s', '7s'],
-//     },
-//   });
-//   const player = 'a';
-//
-//   it('is declared after discard when hand scores 31 points', () => {
-//     const nextState = discardCard(state, player, '4s');
-//     const expectedState = fromJS({
-//       gameState: States.THIRTY_ONE,
-//       winner: 'a',
-//       players: ['a', 'b'],
-//       piles: {
-//         hands: {
-//           a: ['10s', 'Js', 'As'],
-//           b: ['Qc', 'Kc', '10c'],
-//         },
-//         discard: ['4s', 'As'],
-//         draw: ['6s', '7s'],
-//       },
-//     });
-//     expect(nextState).to.equal(expectedState);
-//   });
-// });
+describe('thirtyOne', () => {
+  const state = fromJS({
+    gameState: States.WAITING_FOR_PLAYER_TO_DISCARD,
+    currentPlayer: 'a',
+    players: ['a', 'b'],
+    piles: {
+      hands: {
+        a: ['10s', 'Js', '4s', 'As'],
+        b: ['Qc', 'Kc', '10c'],
+      },
+      discard: ['As'],
+      draw: ['6s', '7s'],
+    },
+  });
+  const player = 'a';
+
+  it('is declared after discard when hand scores 31 points', () => {
+    const nextState = discardCard(state, player, '4s');
+    const expectedState = fromJS({
+      gameState: States.THIRTY_ONE,
+      winner: 'a',
+      players: ['a', 'b'],
+      piles: {
+        hands: {
+          a: ['10s', 'Js', 'As'],
+          b: ['Qc', 'Kc', '10c'],
+        },
+        discard: ['4s', 'As'],
+        draw: ['6s', '7s'],
+      },
+    });
+    expect(nextState).to.equal(expectedState);
+  });
+});

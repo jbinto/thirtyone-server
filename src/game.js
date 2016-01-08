@@ -155,6 +155,8 @@ export function drawDiscard(state, player) {
   // EDGE CASE: do nothing if discard pile is empty
   // XXX BUG FIXME: it's actually impossible for discard pile to get empty.
   // Everyone must discard, so there will always be at least 1 card.
+  // XXX leave this code here for now, because the draw pile CAN get empty,
+  // and would need a reshuffle.
   const discard = state.getIn(['piles', 'discard']);
   if (discard && discard.count() === 0) {
     return state;
