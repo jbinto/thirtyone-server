@@ -76,7 +76,7 @@ describe('negative', () => {
     const badState = fromJS({
       gameState: 'WAITING_FOR_POKER',
       currentPlayer: 'a',
-      players: ['a', 'b']
+      players: ['a', 'b'],
     });
     const player = 'a';
 
