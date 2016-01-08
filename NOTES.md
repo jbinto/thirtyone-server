@@ -1,5 +1,17 @@
 # Notes
 
+## 2016-01-07 17:55
+
+Added JSDoc descriptions to all core game functions in `game.js` and `utils.js`.
+
+Unfortunately, I can't really generate documentation yet. `documentationjs` is the current de-facto standard, it supports Babel, **but not Babel 6**.
+
+Some things came out of this:
+
+* It's actually impossible for the discard pile to get empty
+* Found & fixed bug: allowed user to discard a card they didn't have
+
+
 ## 2015-12-31 23:00
 
 Thinking about a refactor where we only use the minimal state needed for each action.
