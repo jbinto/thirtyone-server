@@ -219,3 +219,18 @@ export function discardCard(state, player, cardToDiscard) {
     .setIn(['piles', 'discard'], newDiscardPile)
     .setIn(['piles', 'hands', player], newHand);
 }
+
+export function knock(state, player) {
+  const valid = Validate.validate({
+    state,
+    player,
+    expectedState: States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK,
+  });
+  if (!valid) {
+    return state;
+  }
+
+  const nextState = Utils.advanceCurrentPlayer(state);
+  return nextState
+    .set('knockedByPlayer', player);
+}

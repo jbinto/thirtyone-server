@@ -7,7 +7,15 @@
 // For now, negative/validation specs are in `negative_spec.js`
 
 import { expect } from 'chai';
-import { addPlayer, startGame, startNewHand, drawCard, drawDiscard, discardCard } from '../src/game';
+import {
+  addPlayer,
+  startGame,
+  startNewHand,
+  drawCard,
+  drawDiscard,
+  discardCard,
+  knock,
+} from '../src/game';
 import { Map, List, fromJS } from 'immutable';
 import * as States from '../src/game_states';
 
@@ -245,4 +253,46 @@ describe('thirtyOne', () => {
     });
     expect(nextState).to.equal(expectedState);
   });
+});
+
+describe('knock', () => {
+  const state = fromJS({
+    gameState: States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK,
+    currentPlayer: 'a',
+    players: ['a', 'b'],
+    piles: {
+      hands: {
+        a: ['10s', 'Js', '4s'],
+        b: ['Qc', 'Kc', '10c'],
+      },
+      discard: ['As'],
+      draw: ['6s', '7s'],
+    },
+  });
+
+  const nextState = knock(state, 'a');
+
+  it('sets knockedByPlayer to current player', () => {
+    expect(nextState.get('knockedByPlayer'))
+      .to.equal('a');
+  });
+
+  it('advances to the next player', () => {
+    expect(nextState.get('currentPlayer'))
+      .to.equal('b');
+  });
+
+  it('sets gameState to WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK', () => {
+    expect(nextState.get('gameState'))
+      .to.equal(States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK);
+  });
+
+  // it('does nothing when knockedByPlayer is already set', () => {
+  //   expect(1).to.equal(0);
+  // });
+
+  // XXX advancePlayer should check `knockedByPlayer` and score/declare game if
+  // currentPlayer == knockedByPlayer
+
+  // XXX who even calls advancePlayer??????
 });
