@@ -119,10 +119,20 @@ function _draw(state, player, whichPile) {
   const hand = state.getIn(['piles', 'hands', player]);
   const newHand = hand.push(pile.first());
 
-  return state
-    .set('gameState', States.WAITING_FOR_PLAYER_TO_DISCARD) // OMG
+  const newState = state
     .setIn(['piles', whichPile], newPile)
-    .setIn(['piles', 'hands', player], newHand);
+    .setIn(['piles', 'hands', player], newHand)
+    .set('gameState', States.WAITING_FOR_PLAYER_TO_DISCARD);
+
+  const newScore = Utils.scoreHand(newHand);
+  if (newScore >= 31) {
+    return newState
+      .set('gameState', States.THIRTY_ONE)
+      .set('winner', player)
+      .remove('currentPlayer');
+  }
+
+  return newState;
 }
 
 /**
