@@ -255,44 +255,91 @@ describe('thirtyOne', () => {
   });
 });
 
-describe('knock', () => {
-  const state = fromJS({
-    gameState: States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK,
-    currentPlayer: 'a',
-    players: ['a', 'b'],
-    piles: {
-      hands: {
-        a: ['10s', 'Js', '4s'],
-        b: ['Qc', 'Kc', '10c'],
+describe('knock: ', () => {
+  describe('when player knocks, ', () => {
+    const state = fromJS({
+      gameState: States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK,
+      currentPlayer: 'a',
+      players: ['a', 'b'],
+      piles: {
+        hands: {
+          a: ['10s', 'Js', '4s'],
+          b: ['Qc', 'Kc', '10c'],
+        },
+        discard: ['As'],
+        draw: ['6s', '7s'],
       },
-      discard: ['As'],
-      draw: ['6s', '7s'],
-    },
+    });
+
+    const nextState = knock(state, 'a');
+
+    it('sets knockedByPlayer to current player', () => {
+      expect(nextState.get('knockedByPlayer'))
+        .to.equal('a');
+    });
+
+    it('advances to the next player', () => {
+      expect(nextState.get('currentPlayer'))
+        .to.equal('b');
+    });
+
+    it('sets gameState to WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK', () => {
+      expect(nextState.get('gameState'))
+        .to.equal(States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK);
+    });
+
+    // it('does nothing when knockedByPlayer is already set', () => {
+    //   expect(1).to.equal(0);
+    // });
+
+    // XXX advancePlayer should check `knockedByPlayer` and score/declare game if
+    // currentPlayer == knockedByPlayer
+
+    // XXX who even calls advancePlayer??????
   });
 
-  const nextState = knock(state, 'a');
+  describe('when someone has knocked', () => {
+    it('scores/calls the game in lieu of knockers turn', () => {
+      const state = fromJS({
+        gameState: States.WAITING_FOR_PLAYER_TO_DISCARD,
+        currentPlayer: 'a',
+        knockedBy: 'b',
+        players: ['a', 'b', 'c'],
+        piles: {
+          hands: {
+            a: ['10s', 'Js', '4s', '5h'],
+            b: ['Qc', 'Kc', '10c'],
+            c: ['4s', '10h', 'Ac'],
+          },
+          discard: ['As'],
+          draw: ['6s', '7s'],
+        },
+      });
 
-  it('sets knockedByPlayer to current player', () => {
-    expect(nextState.get('knockedByPlayer'))
-      .to.equal('a');
+      const nextState = discardCard(state, 'a', '5h');
+
+      const expectedState = fromJS({
+        gameState: States.KNOCK_HAND_OVER,
+        knockedBy: 'b',
+        winner: 'b',
+        players: ['a', 'b', 'c'],
+        finalScores: {
+          'a': 24,
+          'b': 30,
+          'c': 11,
+        },
+        piles: {
+          hands: {
+            a: ['10s', 'Js', '4s', '5h'],
+            b: ['Qc', 'Kc', '10c'],
+            c: ['4s', '10h', 'Ac'],
+          },
+          discard: ['As'],
+          draw: ['6s', '7s'],
+        },
+      });
+
+      expect(nextState).to.equal(expectedState);
+    });
   });
-
-  it('advances to the next player', () => {
-    expect(nextState.get('currentPlayer'))
-      .to.equal('b');
-  });
-
-  it('sets gameState to WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK', () => {
-    expect(nextState.get('gameState'))
-      .to.equal(States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK);
-  });
-
-  // it('does nothing when knockedByPlayer is already set', () => {
-  //   expect(1).to.equal(0);
-  // });
-
-  // XXX advancePlayer should check `knockedByPlayer` and score/declare game if
-  // currentPlayer == knockedByPlayer
-
-  // XXX who even calls advancePlayer??????
 });
