@@ -15,7 +15,7 @@
     "start": "babel-node index.js",
     "test": "npm run test:coverage",
     "test:nocoverage": "mocha --compilers js:babel-core/register --recursive --require ./test/test_helper.js",
-    "test:coverage": "babel-node ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --recursive --require ./test/test_helper.js",
+    "test:coverage": "babel-node ./node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha -- --recursive --require ./test/test_helper.js",
     "test:watch": "npm run test:nocoverage -- --watch",
     "lint": "eslint src/ test/ || true",
     "repl": "babel-node",
