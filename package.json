@@ -19,7 +19,7 @@
     "test:watch": "npm run test:nocoverage -- --watch",
     "lint": "eslint src/ test/ || true",
     "repl": "babel-node",
-    "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
+    "coveralls": "rm -rf ./coverage/rerun; istanbul report --root coverage --dir coverage/rerun; cat ./coverage/rerun/lcov.info | ./node_modules/.bin/coveralls"
   },
   "repository": {
     "type": "git",
