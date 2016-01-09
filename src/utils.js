@@ -1,6 +1,6 @@
 /* eslint new-cap: [2, {capIsNewExceptions: ["Map", "List"]}] */
 import shuffleArray from 'shuffle-array';
-import { List, fromJS } from 'immutable';
+import { List, Map, fromJS } from 'immutable';
 import _ from 'underscore';
 import * as Constants from './constants';
 import 'babel-polyfill'; // XXX HACK FIXME for Array.prototype.includes :(
@@ -111,10 +111,18 @@ export function parseCard(fullCardString) {
  */
 export function scoreHand(hand) {
   const cards = hand.map(parseCard);
-  const ranksBySuit = { c: 0, d: 0, h: 0, s: 0 };
+
+  // First, check for 3-of-a-kind, this is an automatic 30.5
+  const firstRank = cards.first().get('rank');
+  if (cards.every((c) => c.get('rank') === firstRank)) {
+    return 30.5;
+  }
+
+  // otherwise, return the best score by suit
+  const scoresBySuit = { c: 0, d: 0, h: 0, s: 0 };
   cards.forEach((card) => {
-    ranksBySuit[card.get('suit')] += card.get('rank');
+    scoresBySuit[card.get('suit')] += card.get('rank');
   });
 
-  return _.max(Object.values(ranksBySuit));
+  return _.max(Object.values(scoresBySuit));
 }

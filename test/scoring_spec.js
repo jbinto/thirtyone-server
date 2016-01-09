@@ -4,7 +4,7 @@
 /* globals describe, it, beforeEach */
 
 import { expect } from 'chai';
-import { fromJS } from 'immutable';
+import { List, fromJS } from 'immutable';
 import { parseCard, scoreHand } from '../src/utils';
 
 describe('parseCard', () => {
@@ -54,13 +54,20 @@ describe('parseCard', () => {
 
 describe('scoreHand', () => {
   it('can score a hand of all the same suit', () => {
-    const hand = ['10c', 'Jc', 'Ac'];
+    const hand = List(['10c', 'Jc', 'Ac']);
     const score = scoreHand(hand);
     expect(score).to.equal(31);
   });
 
   it('can score a hand of varying suits', () => {
-    expect(scoreHand(['10c', '9c', '2s'])).to.equal(19);
-    expect(scoreHand(['10c', '9h', '2s'])).to.equal(10);
+    const hand1 = List(['10c', '9c', '2s']);
+    const hand2 = List(['10c', '9h', '2s']);
+    expect(scoreHand(hand1)).to.equal(19);
+    expect(scoreHand(hand2)).to.equal(10);
+  });
+
+  it('scores 3 of a kind as 30.5', () => {
+    const hand = List(['2c', '2h', '2s']);
+    expect(scoreHand(hand)).to.equal(30.5);
   });
 });
