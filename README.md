@@ -1,8 +1,6 @@
 # jbinto/thirtyone-server
 
-[![Build Status](https://travis-ci.org/jbinto/thirtyone-server.svg?branch=master)](https://travis-ci.org/jbinto/thirtyone-server)
-
-[![Coverage Status](https://coveralls.io/repos/jbinto/thirtyone-server/badge.svg?branch=master)](https://coveralls.io/r/jbinto/thirtyone-server?branch=master)
+[![Build Status](https://travis-ci.org/jbinto/thirtyone-server.svg?branch=master)](https://travis-ci.org/jbinto/thirtyone-server) [![Coverage Status](https://coveralls.io/repos/jbinto/thirtyone-server/badge.svg?branch=master)](https://coveralls.io/r/jbinto/thirtyone-server?branch=master)
 
 
 ## Project status
