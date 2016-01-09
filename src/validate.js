@@ -25,7 +25,7 @@ export function isCorrectPlayer(state, player) {
 /**
  * Returns whether the current game state matches the passed-in expected state.
  * @param {Map} state The top-level Thirty-One game state tree.
- * @param {string} expectedState The state to compare against, e.g. WAITING_FOR_PLAYER_TO_DRAW
+ * @param {string} expectedState The state to compare against, e.g. WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK
  * @returns {bool} Whether or not the current game state matched the expected game state.
  **/
 export function isCorrectState(state, expectedState) {
@@ -44,7 +44,7 @@ export function isCorrectState(state, expectedState) {
  * game states.
  * @param {Map} state The top-level Thirty-One game state tree.
  * @param {string} player The name of the player (presumably, the one that just sent an action.)
- * @param {string} expectedState The state to compare against, e.g. WAITING_FOR_PLAYER_TO_DRAW
+ * @param {string} expectedState The state to compare against, e.g. WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK
  * @returns {bool} Whether or not the parameters passed the sanity check, given the current state.
  **/
 export function validate({ state, player, expectedState }) {

@@ -60,8 +60,8 @@ describe('startNewHand', () => {
       piles = nextState.get('piles');
     });
 
-    it('sets gameState to WAITING_FOR_PLAYER_TO_DRAW', () => {
-      expect(nextState.get('gameState')).to.equal(States.WAITING_FOR_PLAYER_TO_DRAW);
+    it('sets gameState to WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK', () => {
+      expect(nextState.get('gameState')).to.equal(States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK);
     });
 
     it('sets handStarted and currentPlayer', () => {
@@ -95,7 +95,7 @@ describe('startNewHand', () => {
 
 describe('drawCard', () => {
   const VALID_STATE = fromJS({
-    gameState: States.WAITING_FOR_PLAYER_TO_DRAW,
+    gameState: States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK,
     currentPlayer: 'a',
     players: ['a', 'b'],
     piles: {
@@ -197,9 +197,9 @@ describe('discardCard', () => {
     });
 
     // XXX: what if buddy gets 31 here??
-    it('sets game state to WAITING_FOR_PLAYER_TO_DRAW', () => {
+    it('sets game state to WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK', () => {
       const newGameState = nextState.get('gameState');
-      expect(newGameState).to.equal(States.WAITING_FOR_PLAYER_TO_DRAW);
+      expect(newGameState).to.equal(States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK);
     });
   });
 
@@ -214,7 +214,7 @@ describe('discardCard', () => {
 
 describe('thirtyOne', () => {
   const state = fromJS({
-    gameState: States.WAITING_FOR_PLAYER_TO_DRAW,
+    gameState: States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK,
     currentPlayer: 'a',
     players: ['a', 'b'],
     piles: {

@@ -50,7 +50,7 @@ describe('negative', () => {
 
   describe('(-) when not current player', () => {
     const state = fromJS({
-      gameState: States.WAITING_FOR_PLAYER_TO_DRAW,
+      gameState: States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK,
       currentPlayer: 'a',
       players: ['a', 'b'],
     });
@@ -98,7 +98,7 @@ describe('negative', () => {
 
   describe('(-) when discard pile is empty', () => {
     const state = fromJS({
-      gameState: States.WAITING_FOR_PLAYER_TO_DRAW,
+      gameState: States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK,
       currentPlayer: 'a',
       players: ['a', 'b'],
       piles: {

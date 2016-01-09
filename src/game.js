@@ -55,7 +55,7 @@ export function startGame(state) {
  * @returns {Map} A new state tree with:
  *   `piles` populated with fresh `hands`, `draw`, `discard`;
  *   `handStarted` set to true;
- *   `gameState` set to `WAITING_FOR_PLAYER_TO_DRAW`
+ *   `gameState` set to `WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK`
  **/
 export function startNewHand(state) {
   if (state.get('handStarted')) {
@@ -84,7 +84,7 @@ export function startNewHand(state) {
   });
 
   const nextState = state
-    .set('gameState', States.WAITING_FOR_PLAYER_TO_DRAW)
+    .set('gameState', States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK)
     .set('handStarted', true)
     .set('currentPlayer', players.first())
     .set('piles', piles);
@@ -106,7 +106,7 @@ function _draw(state, player, whichPile) {
   const valid = Validate.validate({
     state,
     player,
-    expectedState: States.WAITING_FOR_PLAYER_TO_DRAW,
+    expectedState: States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK,
   });
   if (!valid) {
     return state;
@@ -138,7 +138,7 @@ function _draw(state, player, whichPile) {
 /**
  * Returns a new state tree that represents the result of a "draw card" action.
  * Will only execute if the current player is correct, and the game state is
- * WAITING_FOR_PLAYER_TO_DRAW.
+ * WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK.
  * @param {Map} state The top-level Thirty-one game state tree.
  * @param {string} player The name of the player that is drawing.
  * @returns {Map} A new state tree with:
@@ -153,7 +153,7 @@ export function drawCard(state, player) {
 /**
  * Returns a new state tree that represents the result of a "draw from discard" action.
  * Will only execute if the current player is correct, and the game state is
- * WAITING_FOR_PLAYER_TO_DRAW.
+ * WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK.
  * @param {Map} state The top-level Thirty-one game state tree.
  * @param {string} player The name of the player that is drawing.
  * @returns {Map} A new state tree with:
@@ -185,7 +185,7 @@ export function drawDiscard(state, player) {
  * @returns {Map} A new state tree with:
  *   `piles.hands.{player}` decreased by 1 card
  *   `piles.discard` increased by 1 card
- *   `gameState` set to `WAITING_FOR_PLAYER_TO_DRAW`
+ *   `gameState` set to `WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK`
  **/
 export function discardCard(state, player, cardToDiscard) {
   // XXX negative test: discard card you don't have => state
@@ -215,7 +215,7 @@ export function discardCard(state, player, cardToDiscard) {
   // XXX TODO score for 31 here
 
   return nextState
-    .set('gameState', States.WAITING_FOR_PLAYER_TO_DRAW)
+    .set('gameState', States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK)
     .setIn(['piles', 'discard'], newDiscardPile)
     .setIn(['piles', 'hands', player], newHand);
 }
