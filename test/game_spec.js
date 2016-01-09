@@ -299,7 +299,7 @@ describe('knock: ', () => {
   });
 
   describe('when someone has knocked', () => {
-    it('scores/calls the game in lieu of knockers turn', () => {
+    describe('after last player discards', () => {
       const state = fromJS({
         gameState: States.WAITING_FOR_PLAYER_TO_DISCARD,
         currentPlayer: 'a',
@@ -318,28 +318,24 @@ describe('knock: ', () => {
 
       const nextState = discardCard(state, 'a', '5h');
 
-      const expectedState = fromJS({
-        gameState: States.KNOCK_HAND_OVER,
-        knockedBy: 'b',
-        winner: 'b',
-        players: ['a', 'b', 'c'],
-        finalScores: {
+      it('sets gameState to KNOCK_HAND_OVER', () => {
+        expect(nextState.get('gameState'))
+          .to.equal(States.KNOCK_HAND_OVER);
+      });
+
+      it('sets winner correctly', () => {
+        expect(nextState.get('winner'))
+          .to.equal('b');
+      });
+
+      it('sets finalScores correctly', () => {
+        const expected = fromJS({
           'a': 24,
           'b': 30,
           'c': 11,
-        },
-        piles: {
-          hands: {
-            a: ['10s', 'Js', '4s', '5h'],
-            b: ['Qc', 'Kc', '10c'],
-            c: ['4s', '10h', 'Ac'],
-          },
-          discard: ['As'],
-          draw: ['6s', '7s'],
-        },
+        });
+        expect(nextState.get('finalScores')).to.equal(expected);
       });
-
-      expect(nextState).to.equal(expectedState);
     });
   });
 });
