@@ -1,5 +1,34 @@
 # Notes
 
+## 2016-01-09 14:20
+
+What's left?
+
+* Rule: 31
+* Rule: 30.5
+* Rule: Knock
+* Multiple hands / loonies (better to save this for when end-to-end works I think)
+* Refactor older functions to use gameState instead of gameStarted/handStarted/etc
+* `index.js` to handle socket connections, start bringing in Redux
+* Code to match players to sockets
+* Code to filter sensitive data before emitting to clients (e.g. the other player's hand, the contents of the draw pile)
+* something something redux
+
+How exactly is redux going to fit here? This is still something we haven't figured out. 
+
+I think the thing to do is finish all of the rules, then get going on the websocket stuff so I can actually start on the React side.
+
+## 2016-01-09 14:00
+
+Spent last night trying to add code coverage. [Ran into a bunch of issues](https://github.com/gotwarlost/istanbul/issues/512) with istanbul+mocha+babel, but that's all solved now and we have a nifty code coverage report:
+
+https://coveralls.io/builds/4674071
+
+One thing that was interesting to learn is that Node 4 (e.g. npm2) and Node 5 (e.g. npm3) don't install dependencies the same way. [npm3 dependency installation is non-deterministic.](https://docs.npmjs.com/how-npm-works/npm3-nondet)
+
+So I found myself in situations where I had something in my `node_modules` that didn't actually match my `package.json`.
+Realistically, `rm -rf node_modules && npm i` on a semi-regular basis is the only way to go. It's how the CI platforms work anyway.
+
 ## 2016-01-07 17:55
 
 Added JSDoc descriptions to all core game functions in `game.js` and `utils.js`.
@@ -9,7 +38,7 @@ Unfortunately, I can't really generate documentation yet. `documentationjs` is t
 Some things came out of this:
 
 * It's actually impossible for the discard pile to get empty
-* Found & fixed bug: allowed user to discard a card they didn't have
+* Found & fixed bug: allowed user to discard a card they didn't have [snip]
 
 
 ## 2015-12-31 23:00
