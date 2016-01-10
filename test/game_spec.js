@@ -290,6 +290,26 @@ describe('knock: ', () => {
   });
 
   describe('when someone has knocked, ', () => {
+    it('another player cannot knock', () => {
+      const state = fromJS({
+        gameState: States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK,
+        currentPlayer: 'a',
+        knockedByPlayer: 'b',
+        players: ['a', 'b'],
+        piles: {
+          hands: {
+            a: ['10s', 'Js', '4s'],
+            b: ['Qc', 'Kc', '10c'],
+          },
+          discard: ['As'],
+          draw: ['6s', '7s'],
+        },
+      });
+
+      const nextState = knock(state, 'a');
+      expect(nextState).to.equal(state);
+    });
+
     describe('and after the last player discards, ', () => {
       const state = fromJS({
         gameState: States.WAITING_FOR_PLAYER_TO_DISCARD,

@@ -255,7 +255,6 @@ export function discardCard(state, player, cardToDiscard) {
     .setIn(['piles', 'discard'], newDiscardPile)
     .setIn(['piles', 'hands', player], newHand);
 
-  // if a player has knocked, and that player is next, branch away here
   if (shouldEndHandForKnock(nextState)) {
     return endHandForKnock(nextState);
   }
@@ -267,13 +266,23 @@ export function discardCard(state, player, cardToDiscard) {
     .setIn(['piles', 'hands', player], newHand);
 }
 
+/**
+ * Returns a new state tree with the current player flagged as having knocked,
+ * and the turn advanced to the next player.
+ * @param {Map} state The top-level Thirty-one game state tree.
+ * @param {string} player The name of the player that is knocking.
+ * @returns {Map} A new state tree with:
+ *   `knockedByPlayer` decreased by 1 card
+ *   `currentPlayer` advanced to the next player
+ *   `gameState` remaining at WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK
+ **/
 export function knock(state, player) {
   const valid = Validate.validate({
     state,
     player,
     expectedState: States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK,
   });
-  if (!valid) {
+  if (!valid || state.get('knockedByPlayer')) {
     return state;
   }
 
