@@ -1,5 +1,35 @@
 # Notes
 
+## 2016-01-10 15:25
+
+Well, that was pretty straightforward.
+
+I now have a (tested) reducer that just delegates to my `game` module.
+
+I'm a little upset it's only a top-level reducer (no nesting/reducer composition).
+
+Makes me wonder if I really understand the reducer/Redux concepts or not.
+
+The intention of separate reducers is supposed to be separating concerns. But so far,
+it seems everything I'm doing requires the entire state tree.
+
+This might change when I introduce loonies: this means we'd have a "game-level"
+reducer and another "hand-level" reducer, with a top-level reducer orchestrating
+the two.
+
+Could take it even further if we modify the server to handle multiple games at once.
+Then, we'd have:
+
+* a top level "games" reducer to handle starting/ending entire games,
+* a "game" level reducer that handles starting/ending hands, and maybe scoring,
+* and a "hand" leaf reducer that handles the actual actions (draw/knock/etc)
+
+Now, what's next:
+
+* Socket boilerplate is very skeletal. Not even a single 'emit'.
+* Need to figure out the
+* Write a command line socket.io client that can connect to this and prove it works
+
 ## 2016-01-10 13:25
 
 Completed the 3 outstanding rules (31, 30.5 and knock).
