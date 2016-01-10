@@ -9,6 +9,7 @@ import {
   drawCard,
   drawDiscard,
   discardCard,
+  knock,
 } from './game';
 import * as States from '../src/game_states';
 
@@ -29,8 +30,9 @@ export default function reducer(state = INITIAL_STATE, action) {
     case 'DRAW_DISCARD':
       return drawDiscard(state, action.player);
     case 'DISCARD_CARD':
-      console.log('oijdsafiosjf08eur23089ru230fr3');
       return discardCard(state, action.player, action.card);
+    case 'KNOCK':
+      return knock(state, action.player);
     default:
       return state;
   }

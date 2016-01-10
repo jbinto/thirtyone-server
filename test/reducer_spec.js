@@ -126,4 +126,18 @@ describe('reducer', () => {
     expect(currentPlayer).to.equal('b');
   });
 
+  it('handles KNOCK', () => {
+    const state = fromJS({
+      gameState: States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK,
+      players: ['a', 'b'],
+      currentPlayer: 'a',
+    });
+    const action = {
+      type: 'KNOCK',
+      player: 'a',
+    };
+    const nextState = reducer(state, action);
+    expect(nextState.get('knockedByPlayer')).to.equal('a');
+    expect(nextState.get('currentPlayer')).to.equal('b');
+  });
 });
