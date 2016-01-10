@@ -7,7 +7,7 @@ import * as Validate from './validate';
 
 /**
  * Returns a new state tree with a new player added. Will only execute if
- * `gameStarted` is falsy.
+ * `gameState` is `WAITING_FOR_NEW_PLAYERS_OR_START_GAME`.
  * @param {Map} state The top-level Thirty-one game state tree.
  * @param {string} playerId The player to be added.
  * @returns {Map} A new, modified game-state tree, with the player added.
@@ -17,35 +17,39 @@ export function addPlayer(state, playerId) {
   // Can't use ES6 destructuring here because we're not using JS objects
   // HINT: babel-plugin-extensible-destructuring
   const players = state.get('players') || List();
-  const gameStarted = state.get('gameStarted') || false;
-
-  if (gameStarted) {
+  const gameState = state.get('gameState') || States.WAITING_FOR_NEW_PLAYERS_OR_START_GAME;
+  if (gameState !== States.WAITING_FOR_NEW_PLAYERS_OR_START_GAME) {
     return state;
   }
 
   const newPlayers = players.push(playerId);
 
-  return fromJS({
-    players: newPlayers,
-    gameStarted,
-  });
+  return state
+    .set('gameState', gameState)
+    .set('players', newPlayers);
 }
 
 /**
- * Returns a new state tree with `gameStarted` set to true.
+ * Returns a new state tree with `gameState` set to `WAITING_FOR_DEAL`.
  * Will only execute there is at least 2 players.
+ * Intended to only execute once per game, regardless of how many hands are played.
  * @param {Map} state The top-level Thirty-one game state tree.
- * @returns {Map} A new, modified game-state tree, with `gameState` set to true.
+ * @returns {Map} A new, modified game-state tree, with `gameState` set to `WAITING_FOR_DEAL`.
  * If there is less than 2 players, returns the original state.
  **/
 export function startGame(state) {
-  const players = state.get('players');
-  if (players.count() > 1) {
-    // XXX what if gameStarted=true already? This is just a noop
-    return state.set('gameStarted', true);
+  const gameState = state.get('gameState')
+  if (gameState !== States.WAITING_FOR_NEW_PLAYERS_OR_START_GAME) {
+    return state;
   }
 
-  return state;
+  // bail out if not enough players
+  const players = state.get('players');
+  if (players.count() < 2) {
+    return state;
+  }
+
+  return state.set('gameState', States.WAITING_FOR_DEAL);
 }
 
 /**

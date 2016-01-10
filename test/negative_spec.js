@@ -18,13 +18,10 @@ import * as States from '../src/game_states';
 
 describe('negative', () => {
   describe('(-) pre-game', () => {
-    // XXX these checks were implemented before gameState
-    // XXX add some states like WAITING_FOR_ENOUGH_PLAYERS
-    // and WAITING_FOR_START_GAME
     it('ignores adding players when game is started', () => {
       const state = fromJS({
+        gameState: States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK,
         players: ['a', 'b'],
-        gameStarted: true,
       });
 
       const nextState = addPlayer(state, 'c');
@@ -34,8 +31,8 @@ describe('negative', () => {
 
   it('will not start game if only 1 player', () => {
     const state = fromJS({
+      gameState: States.WAITING_FOR_NEW_PLAYERS_OR_START_GAME,
       players: ['a'],
-      gameStarted: false,
     });
 
     const nextState = startGame(state);
@@ -46,8 +43,8 @@ describe('negative', () => {
   describe('(-) startNewHand', () => {
     it('does nothing if handStarted', () => {
       const state = fromJS({
+        gameState: States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK,
         players: ['a', 'b'],
-        gameStarted: true,
         handStarted: true,
       });
 

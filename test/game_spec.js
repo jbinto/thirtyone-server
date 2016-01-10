@@ -28,25 +28,26 @@ describe('pre-game', () => {
 
     let nextState = addPlayer(Map(), player1);
     expect(nextState).to.equal(fromJS({
+      gameState: States.WAITING_FOR_NEW_PLAYERS_OR_START_GAME,
       players: ['abcd1234'],
-      gameStarted: false,
     }));
 
     nextState = addPlayer(nextState, player2);
     expect(nextState).to.equal(fromJS({
+      gameState: States.WAITING_FOR_NEW_PLAYERS_OR_START_GAME,
       players: ['abcd1234', 'efgh5678'],
-      gameStarted: false,
     }));
   });
 
   it('will start game if 2 players', () => {
     const state = fromJS({
+      gameState: States.WAITING_FOR_NEW_PLAYERS_OR_START_GAME,
       players: ['a', 'b'],
-      gameStarted: false,
     });
 
     const nextState = startGame(state);
-    expect(nextState.get('gameStarted')).to.be.true();
+    const gameState = nextState.get('gameState');
+    expect(gameState).to.equal(States.WAITING_FOR_DEAL);
   });
 });
 
@@ -59,8 +60,8 @@ describe('startNewHand', () => {
 
     beforeEach(() => {
       state = fromJS({
+        gameState: States.WAITING_FOR_DEAL,
         players: ['a', 'b'],
-        gameStarted: true,
       });
 
       nextState = startNewHand(state);
