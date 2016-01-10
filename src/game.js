@@ -204,6 +204,10 @@ function shouldEndHandForKnock(state) {
  *   `winner` set to the name of the winning player`
  **/
 function endHandForKnock(state) {
+  if (!shouldEndHandForKnock(state)) {
+    return state;
+  }
+
   const hands = state.getIn(['piles', 'hands']);
   const scores = Utils.scoreHands(hands);
   const winner = Utils.winner(hands);
