@@ -92,6 +92,8 @@ export function startNewHand(state) {
   return nextState;
 }
 
+
+
 /**
  * Returns a new state tree that represents the result of a "draw" or "discard" action.
  * @param {Map} state The top-level Thirty-one game state tree.
@@ -121,18 +123,18 @@ function _draw(state, player, whichPile) {
 
   const newState = state
     .setIn(['piles', whichPile], newPile)
-    .setIn(['piles', 'hands', player], newHand)
-    .set('gameState', States.WAITING_FOR_PLAYER_TO_DISCARD);
+    .setIn(['piles', 'hands', player], newHand);
 
-  const newScore = Utils.scoreHand(newHand);
-  if (newScore >= 31) {
+  const isThirtyOne = Utils.scoreHand(newHand) >= 31;
+  if (isThirtyOne) {
     return newState
       .set('gameState', States.THIRTY_ONE)
       .set('winner', player)
       .remove('currentPlayer');
   }
 
-  return newState;
+  return newState
+    .set('gameState', States.WAITING_FOR_PLAYER_TO_DISCARD);
 }
 
 /**
@@ -176,6 +178,47 @@ export function drawDiscard(state, player) {
 }
 
 /**
+ * Returns whether the hand should end due to a knock. Each player is allowed one
+ * turn after a knock. Will only return true when a player has knocked, and that
+ * player would be the next player.
+ * @param {Map} state The top-level Thirty-one game state tree.
+ * @returns {boolean} Whether the hand should end due to a knock.
+ */
+function shouldEndHandForKnock(state) {
+  const knockedByPlayer = state.get('knockedByPlayer');
+  const currentPlayer = state.get('currentPlayer');
+  const nextPlayer = Utils.getNextPlayer(
+    state.get('players').toArray(),
+    currentPlayer
+  );
+  return knockedByPlayer && knockedByPlayer === nextPlayer;
+}
+
+/**
+ * Returns a new state tree with the hand ended after a knock. Will only
+ * execute if `shouldEndHandForKnock` returns true.
+ * @param {Map} state The top-level Thirty-one game state tree.
+ * @returns {Map} A new state tree with:
+ *   `gameState` set to `KNOCK_HAND_OVER`
+ *   `finalScores` set to an object in format { player: score }
+ *   `winner` set to the name of the winning player`
+ **/
+function endHandForKnock(state) {
+  if (!shouldEndHandForKnock(state)) {
+    return state;
+  }
+
+  const hands = state.getIn(['piles', 'hands']);
+  const scores = Utils.scoreHands(hands);
+  const winner = Utils.winner(hands);
+
+  return state
+    .set('gameState', 'KNOCK_HAND_OVER')
+    .set('finalScores', scores)
+    .set('winner', winner);
+}
+
+/**
  * Returns a new state tree that represents the result of a "discard card" action.
  * Will only execute if the current player is correct, and the game state is
  * WAITING_FOR_PLAYER_TO_DISCARD.
@@ -188,7 +231,6 @@ export function drawDiscard(state, player) {
  *   `gameState` set to `WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK`
  **/
 export function discardCard(state, player, cardToDiscard) {
-  // XXX negative test: discard card you don't have => state
   const valid = Validate.validate({
     state,
     player,
@@ -197,23 +239,28 @@ export function discardCard(state, player, cardToDiscard) {
   if (!valid) {
     return state;
   }
+
   const hand = state.getIn(['piles', 'hands', player]);
+  const discardPile = state.getIn(['piles', 'discard']);
 
   // bail out if player doesn't actually have this card
-  const hasCardInHand = hand.includes(cardToDiscard);
-  if (!hasCardInHand) {
+  if (!hand.includes(cardToDiscard)) {
     return state;
   }
-
-  const discardPile = state.getIn(['piles', 'discard']);
 
   const newHand = hand.filterNot(card => card === cardToDiscard);
   const newDiscardPile = discardPile.unshift(cardToDiscard);
 
-  const nextState = Utils.advanceCurrentPlayer(state);
+  let nextState = state
+    .setIn(['piles', 'discard'], newDiscardPile)
+    .setIn(['piles', 'hands', player], newHand);
 
-  // XXX TODO score for 31 here
+  // if a player has knocked, and that player is next, branch away here
+  if (shouldEndHandForKnock(nextState)) {
+    return endHandForKnock(nextState);
+  }
 
+  nextState = Utils.advanceCurrentPlayer(nextState);
   return nextState
     .set('gameState', States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK)
     .setIn(['piles', 'discard'], newDiscardPile)

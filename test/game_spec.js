@@ -287,23 +287,14 @@ describe('knock: ', () => {
       expect(nextState.get('gameState'))
         .to.equal(States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK);
     });
-
-    // it('does nothing when knockedByPlayer is already set', () => {
-    //   expect(1).to.equal(0);
-    // });
-
-    // XXX advancePlayer should check `knockedByPlayer` and score/declare game if
-    // currentPlayer == knockedByPlayer
-
-    // XXX who even calls advancePlayer??????
   });
 
-  describe('when someone has knocked', () => {
-    describe('after last player discards', () => {
+  describe('when someone has knocked, ', () => {
+    describe('and after the last player discards, ', () => {
       const state = fromJS({
         gameState: States.WAITING_FOR_PLAYER_TO_DISCARD,
         currentPlayer: 'a',
-        knockedBy: 'b',
+        knockedByPlayer: 'b',
         players: ['a', 'b', 'c'],
         piles: {
           hands: {

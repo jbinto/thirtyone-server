@@ -126,3 +126,28 @@ export function scoreHand(hand) {
 
   return _.max(Object.values(scoresBySuit));
 }
+
+/**
+ * Returns a Map of the hands' scores.
+ * @param {Map<string, Map>} hands The hands to be scored.
+ * @returns {Map<string, number>} The computed scores of the hands.
+ */
+export function scoreHands(hands) {
+  // scores e.g. { a: 24, b: 31, c: 20 }
+  let scores = Map();
+  hands.forEach((hand, player) => {
+    scores = scores.set(player, scoreHand(hand));
+  });
+  return scores;
+}
+
+export function winner(hands) {
+  // scores e.g. { a: 24, b: 31, c: 20 }
+  const scores = scoreHands(hands).toObject();
+
+  // returns the player with the highest score
+  // <3 lodash && http://stackoverflow.com/a/27376667/19779
+  const players = Object.keys(scores);
+  const scoreByPlayer = (player) => scores[player];
+  return _.max(players, scoreByPlayer);
+}
