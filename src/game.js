@@ -6,8 +6,10 @@ import * as Utils from './utils';
 import * as Validate from './validate';
 
 /**
- * Returns a new state tree with a new player added. Will only execute if
- * `gameState` is `WAITING_FOR_NEW_PLAYERS_OR_START_GAME`.
+ * Returns a new state tree with a new player added.
+ * Execute this until the desired number of players is reached, then execute
+ * `startGame()`.
+ * Will only execute if `gameState` is `WAITING_FOR_NEW_PLAYERS_OR_START_GAME`.
  * @param {Map} state The top-level Thirty-one game state tree.
  * @param {string} playerId The player to be added.
  * @returns {Map} A new, modified game-state tree, with the player added.
@@ -32,6 +34,7 @@ export function addPlayer(state, playerId) {
 /**
  * Returns a new state tree with `gameState` set to `WAITING_FOR_DEAL`.
  * Will only execute there is at least 2 players.
+ * This "locks in" the current players to the game.
  * Intended to only execute once per game, regardless of how many hands are played.
  * @param {Map} state The top-level Thirty-one game state tree.
  * @returns {Map} A new, modified game-state tree, with `gameState` set to `WAITING_FOR_DEAL`.

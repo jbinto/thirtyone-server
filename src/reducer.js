@@ -6,6 +6,7 @@ import {
   addPlayer,
   startGame,
   startNewHand,
+  drawCard,
 } from './game';
 import * as States from '../src/game_states';
 
@@ -21,6 +22,8 @@ export default function reducer(state = INITIAL_STATE, action) {
       return startGame(state);
     case 'START_NEW_HAND':
       return startNewHand(state);
+    case 'DRAW_CARD':
+      return drawCard(state, action.player);
     default:
       return state;
   }

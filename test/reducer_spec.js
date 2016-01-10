@@ -43,5 +43,31 @@ describe('reducer', () => {
     const gameState = nextState.get('gameState');
     expect(gameState).to.equal(States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK);
   });
-  
+
+
+  it('handles DRAW_CARD', () => {
+    const state = fromJS({
+      gameState: States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK,
+      players: ['a', 'b'],
+      currentPlayer: 'a',
+      piles: {
+        hands: {
+          'a': ['2s', '3s', '4s'],
+          'b': ['8c', '9c', '10c'],
+        },
+        draw: ['As', 'Qs'],
+      },
+    });
+    const action = { type: 'DRAW_CARD', player: 'a' };
+    const nextState = reducer(state, action);
+
+    const gameState = nextState.get('gameState');
+    const hand = nextState.getIn(['piles', 'hands', 'a']);
+    const draw = nextState.getIn(['piles', 'draw']);
+
+    expect(gameState).to.equal(States.WAITING_FOR_PLAYER_TO_DISCARD);
+    expect(hand.count()).to.equal(4);
+    expect(draw.count()).to.equal(1);
+  });
+
 });
