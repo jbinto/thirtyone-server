@@ -38,7 +38,7 @@ export function addPlayer(state, playerId) {
  * If there is less than 2 players, returns the original state.
  **/
 export function startGame(state) {
-  const gameState = state.get('gameState')
+  const gameState = state.get('gameState');
   if (gameState !== States.WAITING_FOR_NEW_PLAYERS_OR_START_GAME) {
     return state;
   }
@@ -95,8 +95,6 @@ export function startNewHand(state) {
 
   return nextState;
 }
-
-
 
 /**
  * Returns a new state tree that represents the result of a "draw" or "discard" action.

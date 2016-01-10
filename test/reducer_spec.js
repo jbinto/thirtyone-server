@@ -3,7 +3,7 @@
 
 /* globals describe, it, beforeEach */
 
-import { Map, List, fromJS } from 'immutable'
+import { fromJS } from 'immutable';
 import { expect } from 'chai';
 import reducer from '../src/reducer';
 import * as States from '../src/game_states';
@@ -27,11 +27,21 @@ describe('reducer', () => {
       gameState: States.WAITING_FOR_NEW_PLAYERS_OR_START_GAME,
       players: ['a', 'b'],
     });
-    const action = {
-      type: 'START_GAME',
-    };
+    const action = { type: 'START_GAME' };
     const nextState = reducer(state, action);
     const gameState = nextState.get('gameState');
     expect(gameState).to.equal(States.WAITING_FOR_DEAL);
   });
+
+  it('handles START_NEW_HAND', () => {
+    const state = fromJS({
+      gameState: States.WAITING_FOR_DEAL,
+      players: ['a', 'b'],
+    });
+    const action = { type: 'START_NEW_HAND' };
+    const nextState = reducer(state, action);
+    const gameState = nextState.get('gameState');
+    expect(gameState).to.equal(States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK);
+  });
+  
 });
