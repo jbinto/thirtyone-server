@@ -70,4 +70,30 @@ describe('reducer', () => {
     expect(draw.count()).to.equal(1);
   });
 
+  it('handles DRAW_DISCARD', () => {
+    const state = fromJS({
+      gameState: States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK,
+      players: ['a', 'b'],
+      currentPlayer: 'a',
+      piles: {
+        hands: {
+          'a': ['2s', '3s', '4s'],
+          'b': ['8c', '9c', '10c'],
+        },
+        discard: ['As', 'Qs'],
+      },
+    });
+    const action = { type: 'DRAW_DISCARD', player: 'a' };
+    const nextState = reducer(state, action);
+
+    const gameState = nextState.get('gameState');
+    const hand = nextState.getIn(['piles', 'hands', 'a']);
+    const discard = nextState.getIn(['piles', 'discard']);
+
+    expect(gameState).to.equal(States.WAITING_FOR_PLAYER_TO_DISCARD);
+    expect(hand.count()).to.equal(4);
+    expect(discard.count()).to.equal(1);
+  });
+
+
 });
