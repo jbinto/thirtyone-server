@@ -113,8 +113,8 @@ export function scoreHand(hand) {
   const cards = hand.map(parseCard);
 
   // First, check for 3-of-a-kind, this is an automatic 30.5
-  const firstRank = cards.first().get('rank');
-  if (cards.every((c) => c.get('rank') === firstRank)) {
+  const firstCard = cards.first().get('name');
+  if (cards.every((c) => c.get('name') === firstCard)) {
     return 30.5;
   }
 

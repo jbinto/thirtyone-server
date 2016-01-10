@@ -70,4 +70,9 @@ describe('scoreHand', () => {
     const hand = List(['2c', '2h', '2s']);
     expect(scoreHand(hand)).to.equal(30.5);
   });
+
+  it('scores three face cards of same suit as 30', () => {
+    const hand = List(['Qc', 'Jc', 'Kc']);
+    expect(scoreHand(hand)).to.equal(30);
+  });
 });
