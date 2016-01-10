@@ -95,5 +95,35 @@ describe('reducer', () => {
     expect(discard.count()).to.equal(1);
   });
 
+  it('handles DISCARD_CARD', () => {
+    const state = fromJS({
+      gameState: States.WAITING_FOR_PLAYER_TO_DISCARD,
+      players: ['a', 'b'],
+      currentPlayer: 'a',
+      piles: {
+        hands: {
+          'a': ['2s', '3s', '4s', '5s'],
+          'b': ['8c', '9c', '10c'],
+        },
+        discard: ['As'],
+      },
+    });
+    const action = {
+      type: 'DISCARD_CARD',
+      player: 'a',
+      card: '2s',
+    };
+    const nextState = reducer(state, action);
+
+    const gameState = nextState.get('gameState');
+    const hand = nextState.getIn(['piles', 'hands', 'a']);
+    const discard = nextState.getIn(['piles', 'discard']);
+    const currentPlayer = nextState.get('currentPlayer');
+
+    expect(gameState).to.equal(States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK);
+    expect(hand.count()).to.equal(3);
+    expect(discard.count()).to.equal(2);
+    expect(currentPlayer).to.equal('b');
+  });
 
 });

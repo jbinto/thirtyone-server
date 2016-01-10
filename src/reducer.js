@@ -8,6 +8,7 @@ import {
   startNewHand,
   drawCard,
   drawDiscard,
+  discardCard,
 } from './game';
 import * as States from '../src/game_states';
 
@@ -27,6 +28,9 @@ export default function reducer(state = INITIAL_STATE, action) {
       return drawCard(state, action.player);
     case 'DRAW_DISCARD':
       return drawDiscard(state, action.player);
+    case 'DISCARD_CARD':
+      console.log('oijdsafiosjf08eur23089ru230fr3');
+      return discardCard(state, action.player, action.card);
     default:
       return state;
   }
