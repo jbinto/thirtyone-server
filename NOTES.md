@@ -1,5 +1,84 @@
 # Notes
 
+## 2016-01-10 13:25
+
+Completed the 3 outstanding rules (31, 30.5 and knock).
+
+Now integrating Socket.io and Redux.
+
+**Problem:**
+
+How do I TDD the `reducer_spec` without essentially duplicating my `game` tests?
+
+Options:
+
+**1) Gradually convert `game_spec` to `reducer_spec`**
+
+Pros: One set of specs, end to end, could still have 100% coverage.
+
+Cons: This tightly couples `game` and `reducer`. If I were to abandon redux or the reducer concept, I'd be without tests for `game`.
+
+**2) Duplicate `game_spec` in `reducer_spec`**
+
+Pros: Two sets of specs, can separately identify bugs in e.g. reducer code vs game code.
+
+Cons: Duplicated code. Every failing test needs to be rewritten twice.
+
+**3) Some subset of `game_spec` in `reducer_spec`**
+
+Pros: ???
+
+Cons: Still a bit of duplication. Not really sure *which* subset is important and which can be ignored.
+
+**4) Gradually convert `game` (implmentation!) to `reducer`**
+
+Pros: Realistically, what I've been writing is 85% of a Redux reducer. It wouldn't take much to just refactor `game` to `reducer`. Everything that takes `state, ...args` should just be refactored to take `state, action`.
+
+Cons: Same as **(1)**, except `game` would *become* `reducer`. Still couples me to redux.
+
+----
+
+Looking at `redux-voting-server`, we had tests for `core` and `reducer`. Let's see the differences:
+
+**core_spec**
+
+* Granular assertions, including edge cases
+* Multiple assertions per "action" (function really)
+* Input is `(state, ...args)`, output is `newState`
+
+**reducer_spec**
+
+* Calls `reducer` directly (e.g. not via `store.dispatch`)
+* Input is `(state, action)`, output is `newState`
+* Tests are fully end-to-end, e.g. `core` gets covered twice
+* **Only one test per action.**
+* Another `reduce` test at the end to zip through many actions.
+
+----
+
+So obviously the `redux-voting-server` took option **(3)**. I was leaning towards **(4)** but after looking more closely, I think there's value in **(3)**.
+
+Basically, just do a simple sanity check on each potential action. Do not go into edge cases etc.
+
+We're not testing the game logic, we're testing that the reducer works.
+
+[Again on the London/Chicago schools of TDD](https://twitter.com/jessebuchananCA/status/686246396366684160), I feel the "right" thing to do would be a London style interaction/collaboration test: ensure that `reducer` called `game` in the correct way. Then you're covering both the `reducer` code and the `game` code, without making the tests brittle by duplicating any state.
+
+But I don't know how to do this, and I feel it's overly complicated. If I didn't control `game` I'd consider investing the time to learn it.
+
+The mechanics of doing this kind of testing in JavaScript is a little fuzzy to me. If this were a normal static language like C# you'd either code against an interface `IGame` and then drop in a whole new mocked out object that implements `IGame`. You'd use some sort of dependency injection solution to wire the correct dependencies up at runtime/test-time.
+
+But DI is eschewed in JavaScript - only angular takes it seriously, and that brings in the whole AMD module baggage which I have no interest in subjecting myself to.
+
+I *think* that tools like `sinon` and `mockery` and `gently` do something like hijacking Node's `require`:
+
+* http://bulkan-evcimen.com/using_mockery_to_mock_modules_nodejs.html
+
+* https://github.com/felixge/node-gently
+
+So that's one way to do it, but it's not going to be the way I do it today, I think.
+
+
 ## 2016-01-09 14:20
 
 What's left?
@@ -14,7 +93,7 @@ What's left?
 * Code to filter sensitive data before emitting to clients (e.g. the other player's hand, the contents of the draw pile)
 * something something redux
 
-How exactly is redux going to fit here? This is still something we haven't figured out. 
+How exactly is redux going to fit here? This is still something we haven't figured out.
 
 I think the thing to do is finish all of the rules, then get going on the websocket stuff so I can actually start on the React side.
 
