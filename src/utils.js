@@ -1,7 +1,7 @@
 /* eslint new-cap: [2, {capIsNewExceptions: ["Map", "List"]}] */
 import shuffleArray from 'shuffle-array';
 import { List, Map, fromJS } from 'immutable';
-import _ from 'underscore';
+import _ from 'lodash';
 import * as Constants from './constants';
 import 'babel-polyfill'; // XXX HACK FIXME for Array.prototype.includes :(
 
