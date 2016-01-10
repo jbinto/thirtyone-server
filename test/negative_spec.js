@@ -4,7 +4,15 @@
 /* globals describe, it, beforeEach */
 
 import { expect } from 'chai';
-import { addPlayer, startGame, startNewHand, drawCard, drawDiscard, discardCard } from '../src/game';
+import {
+  addPlayer,
+  startGame,
+  startNewHand,
+  drawCard,
+  drawDiscard,
+  discardCard,
+  knock,
+} from '../src/game';
 import { fromJS } from 'immutable';
 import * as States from '../src/game_states';
 
@@ -50,7 +58,7 @@ describe('negative', () => {
 
   describe('(-) when not current player', () => {
     const state = fromJS({
-      gameState: States.WAITING_FOR_PLAYER_TO_DRAW,
+      gameState: States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK,
       currentPlayer: 'a',
       players: ['a', 'b'],
     });
@@ -68,6 +76,11 @@ describe('negative', () => {
 
     it('discardCard does nothing', () => {
       const nextState = discardCard(state, wrongPlayer, 'Qs');
+      expect(nextState).to.equal(state);
+    });
+
+    it('knock does nothing', () => {
+      const nextState = knock(state, wrongPlayer);
       expect(nextState).to.equal(state);
     });
   });
@@ -94,11 +107,18 @@ describe('negative', () => {
       const nextState = discardCard(badState, player, 'Qs');
       expect(nextState).to.equal(badState);
     });
+
+    it('knock does nothing', () => {
+      const nextState = knock(badState, player);
+      expect(nextState).to.equal(badState);
+    });
   });
 
+
+  // XXX REMOVE ME - this is not even a possible circumstance
   describe('(-) when discard pile is empty', () => {
     const state = fromJS({
-      gameState: States.WAITING_FOR_PLAYER_TO_DRAW,
+      gameState: States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK,
       currentPlayer: 'a',
       players: ['a', 'b'],
       piles: {

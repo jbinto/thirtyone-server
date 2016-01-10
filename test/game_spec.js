@@ -7,7 +7,15 @@
 // For now, negative/validation specs are in `negative_spec.js`
 
 import { expect } from 'chai';
-import { addPlayer, startGame, startNewHand, drawCard, drawDiscard, discardCard } from '../src/game';
+import {
+  addPlayer,
+  startGame,
+  startNewHand,
+  drawCard,
+  drawDiscard,
+  discardCard,
+  knock,
+} from '../src/game';
 import { Map, List, fromJS } from 'immutable';
 import * as States from '../src/game_states';
 
@@ -60,8 +68,8 @@ describe('startNewHand', () => {
       piles = nextState.get('piles');
     });
 
-    it('sets gameState to WAITING_FOR_PLAYER_TO_DRAW', () => {
-      expect(nextState.get('gameState')).to.equal(States.WAITING_FOR_PLAYER_TO_DRAW);
+    it('sets gameState to WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK', () => {
+      expect(nextState.get('gameState')).to.equal(States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK);
     });
 
     it('sets handStarted and currentPlayer', () => {
@@ -95,7 +103,7 @@ describe('startNewHand', () => {
 
 describe('drawCard', () => {
   const VALID_STATE = fromJS({
-    gameState: States.WAITING_FOR_PLAYER_TO_DRAW,
+    gameState: States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK,
     currentPlayer: 'a',
     players: ['a', 'b'],
     piles: {
@@ -197,9 +205,9 @@ describe('discardCard', () => {
     });
 
     // XXX: what if buddy gets 31 here??
-    it('sets game state to WAITING_FOR_PLAYER_TO_DRAW', () => {
+    it('sets game state to WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK', () => {
       const newGameState = nextState.get('gameState');
-      expect(newGameState).to.equal(States.WAITING_FOR_PLAYER_TO_DRAW);
+      expect(newGameState).to.equal(States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK);
     });
   });
 
@@ -214,7 +222,7 @@ describe('discardCard', () => {
 
 describe('thirtyOne', () => {
   const state = fromJS({
-    gameState: States.WAITING_FOR_PLAYER_TO_DRAW,
+    gameState: States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK,
     currentPlayer: 'a',
     players: ['a', 'b'],
     piles: {
@@ -244,5 +252,101 @@ describe('thirtyOne', () => {
       },
     });
     expect(nextState).to.equal(expectedState);
+  });
+});
+
+describe('knock: ', () => {
+  describe('when player knocks, ', () => {
+    const state = fromJS({
+      gameState: States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK,
+      currentPlayer: 'a',
+      players: ['a', 'b'],
+      piles: {
+        hands: {
+          a: ['10s', 'Js', '4s'],
+          b: ['Qc', 'Kc', '10c'],
+        },
+        discard: ['As'],
+        draw: ['6s', '7s'],
+      },
+    });
+
+    const nextState = knock(state, 'a');
+
+    it('sets knockedByPlayer to current player', () => {
+      expect(nextState.get('knockedByPlayer'))
+        .to.equal('a');
+    });
+
+    it('advances to the next player', () => {
+      expect(nextState.get('currentPlayer'))
+        .to.equal('b');
+    });
+
+    it('sets gameState to WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK', () => {
+      expect(nextState.get('gameState'))
+        .to.equal(States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK);
+    });
+  });
+
+  describe('when someone has knocked, ', () => {
+    it('another player cannot knock', () => {
+      const state = fromJS({
+        gameState: States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK,
+        currentPlayer: 'a',
+        knockedByPlayer: 'b',
+        players: ['a', 'b'],
+        piles: {
+          hands: {
+            a: ['10s', 'Js', '4s'],
+            b: ['Qc', 'Kc', '10c'],
+          },
+          discard: ['As'],
+          draw: ['6s', '7s'],
+        },
+      });
+
+      const nextState = knock(state, 'a');
+      expect(nextState).to.equal(state);
+    });
+
+    describe('and after the last player discards, ', () => {
+      const state = fromJS({
+        gameState: States.WAITING_FOR_PLAYER_TO_DISCARD,
+        currentPlayer: 'a',
+        knockedByPlayer: 'b',
+        players: ['a', 'b', 'c'],
+        piles: {
+          hands: {
+            a: ['10s', 'Js', '4s', '5h'],
+            b: ['Qc', 'Kc', '10c'],
+            c: ['4s', '10h', 'Ac'],
+          },
+          discard: ['As'],
+          draw: ['6s', '7s'],
+        },
+      });
+
+      const nextState = discardCard(state, 'a', '5h');
+
+      it('sets gameState to KNOCK_HAND_OVER', () => {
+        expect(nextState.get('gameState'))
+          .to.equal(States.KNOCK_HAND_OVER);
+      });
+
+      it('sets winner correctly', () => {
+        expect(nextState.get('winner'))
+          .to.equal('b');
+      });
+
+      it('sets finalScores correctly', () => {
+        const expected = fromJS({
+          'a': 24,
+          'b': 30,
+          'c': 11,
+        });
+        expect(nextState.get('finalScores')).to.equal(expected);
+      });
+    });
   });
 });
