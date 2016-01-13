@@ -17,7 +17,7 @@ import {
   knock,
 } from '../src/game';
 import { Map, List, fromJS } from 'immutable';
-import * as States from '../src/game_states';
+import { States } from '../src/constants';
 
 
 // XXX refactor pre-game into own lib/spec

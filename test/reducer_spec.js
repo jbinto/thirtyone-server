@@ -6,7 +6,7 @@
 import { fromJS } from 'immutable';
 import { expect } from 'chai';
 import reducer from '../src/reducer';
-import * as States from '../src/game_states';
+import { States } from '../src/constants';
 
 describe('reducer', () => {
   describe('individual actions', () => {
@@ -156,7 +156,7 @@ describe('reducer', () => {
 
       // XXX technically this is non-deterministic
       // User could have 31 off the bat, or after drawing.
-      // Need a way to inject a custom deck.
+      // Need a way to inject a custom deck to make this deterministic.
 
       const finalState = actions.reduce(reducer, undefined);
 
@@ -164,7 +164,7 @@ describe('reducer', () => {
       const hand = finalState.getIn(['piles', 'hands', 'John']);
 
       expect(gameState).to.equal(States.WAITING_FOR_PLAYER_TO_DISCARD);
-      expect(hand.count()).to.equal(4);                        
+      expect(hand.count()).to.equal(4);
     });
   });
 });

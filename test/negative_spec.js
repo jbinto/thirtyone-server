@@ -14,7 +14,7 @@ import {
   knock,
 } from '../src/game';
 import { fromJS } from 'immutable';
-import * as States from '../src/game_states';
+import { States } from '../src/constants';
 
 describe('negative', () => {
   describe('(-) pre-game', () => {

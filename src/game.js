@@ -1,9 +1,11 @@
 /* eslint new-cap: [2, {capIsNewExceptions: ["Map", "List"]}] */
 
 import { List, Map, fromJS } from 'immutable';
-import * as States from './game_states';
+import { States } from './constants';
 import * as Utils from './utils';
 import * as Validate from './validate';
+
+
 
 /**
  * Returns a new state tree with a new player added.
