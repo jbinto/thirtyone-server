@@ -82,6 +82,35 @@ describe('negative', () => {
     });
   });
 
+  describe('(-) when invalid player', () => {
+    const state = fromJS({
+      gameState: States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK,
+      currentPlayer: 'a',
+      players: ['a', 'b'],
+    });
+    const invalidPlayer = 'c';
+
+    it('drawCard does nothing', () => {
+      const nextState = drawCard(state, invalidPlayer);
+      expect(nextState).to.equal(state);
+    });
+
+    it('drawDiscard does nothing', () => {
+      const nextState = drawCard(state, invalidPlayer);
+      expect(nextState).to.equal(state);
+    });
+
+    it('discardCard does nothing', () => {
+      const nextState = discardCard(state, invalidPlayer, 'Qs');
+      expect(nextState).to.equal(state);
+    });
+
+    it('knock does nothing', () => {
+      const nextState = knock(state, invalidPlayer);
+      expect(nextState).to.equal(state);
+    });
+  });
+
   describe('(-) when gameState is wrong', () => {
     const badState = fromJS({
       gameState: 'WAITING_FOR_POKER',
