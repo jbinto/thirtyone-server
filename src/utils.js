@@ -141,6 +141,11 @@ export function scoreHands(hands) {
   return scores;
 }
 
+/**
+ * Returns the name of the player with the highest score.
+ * @param {Map<string, Map>} hands The hands to be scored.
+ * @returns {string} The name of the player with the highest score.
+ */
 export function winner(hands) {
   // scores e.g. { a: 24, b: 31, c: 20 }
   const scores = scoreHands(hands).toObject();
@@ -150,4 +155,24 @@ export function winner(hands) {
   const players = Object.keys(scores);
   const scoreByPlayer = (player) => scores[player];
   return _.max(players, scoreByPlayer);
+}
+
+/**
+ * Returns a new state tree for a particular player, with sensitive
+ * information (like the contents of other player's hands) filtered
+ * out.
+ * @param {Map} state The top-level Thirty-one game state tree.
+ * @param {string} player The name of the player to filter by.
+ * @returns {Map} A new state tree with the following modifications:
+ *   `piles` is removed;
+ *   `hand` is populated with the current player's hand;
+ *   `topDiscard` is populated with the top card on the discard pile.
+ */
+export function filterStateTree(state, player) {
+  const hand = state.getIn(['piles', 'hands', player]);
+  const topDiscard = state.getIn(['piles', 'discard']).first();
+  return state
+    .set('hand', hand)
+    .set('topDiscard', topDiscard)
+    .remove('piles');
 }

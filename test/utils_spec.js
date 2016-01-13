@@ -7,7 +7,7 @@ import { expect } from 'chai';
 import { fromJS, List } from 'immutable';
 import _ from 'lodash';
 import * as Utils from '../src/utils';
-import * as Constants from '../src/constants';
+import { States, DEFAULT_DECK } from '../src/constants';
 
 describe('utils', () => {
   describe('getNextPlayer', () => {
@@ -68,7 +68,7 @@ describe('utils', () => {
 
   describe('getShuffledDeck', () => {
     const deck = Utils.getShuffledDeck();
-    const defaultDeck = List(Constants.DEFAULT_DECK);
+    const defaultDeck = List(DEFAULT_DECK);
 
     it('returns a different deck (ordering) than default', () => {
       expect(deck).to.not.equal(defaultDeck);
@@ -76,6 +76,43 @@ describe('utils', () => {
 
     it('when resorted, is same as the default deck', () => {
       expect(deck.sort()).to.equal(defaultDeck.sort());
+    });
+  });
+});
+
+describe('filterStateTree', () => {
+  describe('by player', () => {
+    const state = fromJS({
+      gameState: States.WAITING_FOR_PLAYER_TO_DISCARD,
+      currentPlayer: 'a',
+      players: ['a', 'b'],
+      piles: {
+        hands: {
+          a: ['2s', '3s', '4s', '5s'],
+          b: ['Qc', 'Kc', '10c'],
+        },
+        discard: ['As'],
+        draw: ['6s', '7s'],
+      },
+    });
+    const player = 'a';
+    const filteredState = Utils.filterStateTree(state, player);
+
+    it('filters out piles', () => {
+      const piles = filteredState.get('piles');
+      expect(piles).to.be.undefined();
+    });
+
+    it('populates hand from piles.hands.[player]', () => {
+      const expectedHand = List(['2s', '3s', '4s', '5s']);
+      const hand = filteredState.get('hand');
+      expect(hand).to.equal(expectedHand);
+    });
+
+    it('populates topDiscard from piles.hands.discard.first', () => {
+      const expected = 'As';
+      const topDiscard = filteredState.get('topDiscard');
+      expect(topDiscard).to.equal(expected);
     });
   });
 });
