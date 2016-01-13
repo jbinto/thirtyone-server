@@ -12,6 +12,7 @@ import {
   drawDiscard,
   discardCard,
   knock,
+  _endHandForKnock
 } from '../src/game';
 import { fromJS } from 'immutable';
 import { States } from '../src/constants';
@@ -119,6 +120,11 @@ describe('negative', () => {
     });
     const player = 'a';
 
+    it('startGame does nothing', () => {
+      const nextState = startGame(badState);
+      expect(nextState).to.equal(badState);
+    });
+
     it('drawCard does nothing', () => {
       const nextState = drawCard(badState, player);
       expect(nextState).to.equal(badState);
@@ -136,6 +142,13 @@ describe('negative', () => {
 
     it('knock does nothing', () => {
       const nextState = knock(badState, player);
+      expect(nextState).to.equal(badState);
+    });
+
+    it('_endHandForKnock does nothing', () => {
+      // XXX shouldn't really be testing private api
+      // but code coverage tool said I should :(
+      const nextState = _endHandForKnock(badState);
       expect(nextState).to.equal(badState);
     });
   });

@@ -191,7 +191,7 @@ export function drawDiscard(state, player) {
  * @param {Map} state The top-level Thirty-one game state tree.
  * @returns {boolean} Whether the hand should end due to a knock.
  */
-function shouldEndHandForKnock(state) {
+function _shouldEndHandForKnock(state) {
   const knockedByPlayer = state.get('knockedByPlayer');
   const currentPlayer = state.get('currentPlayer');
   const nextPlayer = Utils.getNextPlayer(
@@ -210,8 +210,8 @@ function shouldEndHandForKnock(state) {
  *   `finalScores` set to an object in format { player: score }
  *   `winner` set to the name of the winning player`
  **/
-function endHandForKnock(state) {
-  if (!shouldEndHandForKnock(state)) {
+export function _endHandForKnock(state) {
+  if (!_shouldEndHandForKnock(state)) {
     return state;
   }
 
@@ -262,8 +262,8 @@ export function discardCard(state, player, cardToDiscard) {
     .setIn(['piles', 'discard'], newDiscardPile)
     .setIn(['piles', 'hands', player], newHand);
 
-  if (shouldEndHandForKnock(nextState)) {
-    return endHandForKnock(nextState);
+  if (_shouldEndHandForKnock(nextState)) {
+    return _endHandForKnock(nextState);
   }
 
   nextState = Utils.advanceCurrentPlayer(nextState);

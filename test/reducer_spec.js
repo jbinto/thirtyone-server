@@ -167,4 +167,17 @@ describe('reducer', () => {
       expect(hand.count()).to.equal(4);
     });
   });
+
+  describe('invalid actions', () => {
+    it('are ignored', () => {
+      const state = fromJS({
+        gameState: States.WAITING_FOR_PLAYER_TO_DRAW_OR_KNOCK,
+        players: ['a', 'b'],
+        currentPlayer: 'a',
+      });
+      const action = { type: 'POKER', payload: 'abc' };
+      const nextState = reducer(state, action);
+      expect(nextState).to.equal(state);
+    });
+  });
 });
