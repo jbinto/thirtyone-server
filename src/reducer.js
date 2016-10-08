@@ -10,6 +10,7 @@ const INITIAL_STATE = Map({
 });
 
 export default function reducer(state = INITIAL_STATE, action) {
+  console.log(`reducer action=${JSON.stringify(action)} state=${JSON.stringify(state)}`)
   switch (action.type) {
     case Actions.ADD_PLAYER:
       return Game.addPlayer(state, action.player);
