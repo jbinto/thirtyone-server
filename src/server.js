@@ -13,14 +13,14 @@ export default function startServer(store) {
   });
 
   io.on('connection', (socket) => {
-    // const dispatch = (action) => {
-    //   console.log('action received from websocket: ${JSON.stringify(action)}');
-    //
-    //   // XXX do some sort of validation - no?
-    //   store.dispatch(action);
-    // };
-    //
-    // socket.on('action', dispatch);
+    const dispatch = (action) => {
+      console.log(`action received from websocket: ${JSON.stringify(action)}`);
+
+      // XXX do some sort of validation - no?
+      store.dispatch(action);
+    };
+
+    socket.on('action', dispatch);
 
     console.log('Accepted connection, providing current state to new client');
     console.log(getState())
