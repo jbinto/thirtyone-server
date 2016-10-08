@@ -6,7 +6,8 @@ export default function startServer(store) {
 
   const getState = () => store.getState().toJS()
 
-  const playerSockets = new Map()
+  const playersSockets = new Map()
+  const socketsPlayers = new Map()
 
   store.subscribe(() => {
     console.log('Hooray! Redux state updated! Broadcasting to all clients.');
@@ -17,7 +18,7 @@ export default function startServer(store) {
 
     console.log('also whispering:')
 
-    playerSockets.forEach((socket, player) => {
+    playersSockets.forEach((socket, player) => {
       console.log(`  player ${player} ${socket}`)
       socket.emit('hello', `~hello ${player}~`)
     })
@@ -37,14 +38,35 @@ export default function startServer(store) {
       // Map player names to sockets.
       if (action.type == 'ADD_PLAYER') {
         console.log(`Socket ${client.id} is now player ${action.player}`)
-        playerSockets.set(action.player, client)
+        playersSockets.set(action.player, client)
+        socketsPlayers.set(client.id, action.player)
       }
       dispatch(action)
     });
+
+    client.on('disconnect', (reason) => {
+      const player = socketsPlayers.get(client.id)
+      if (player != null) {
+
+        socketsPlayers.delete(client.id)
+        playersSockets.delete(player)
+        store.dispatch({
+          type: 'ABANDON_GAME',
+          player,
+        })
+
+        setTimeout(
+          () => { store.dispatch({type: 'RESET_GAME'}) },
+          5000
+        )
+      }
+    })
 
     console.log('Accepted connection, providing current state to new client');
     console.log(getState())
     client.emit('state', getState());
     console.log('------------------------------------------------------------')
   });
+
+
 }

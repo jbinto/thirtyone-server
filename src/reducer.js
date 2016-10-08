@@ -5,11 +5,11 @@ import { Map } from 'immutable';
 import * as Game from './game';
 import { States, Actions } from '../src/constants';
 
-const INITIAL_STATE = Map({
+const INITIAL_STATE = () => Map({
   gameState: States.WAITING_FOR_NEW_PLAYERS_OR_START_GAME,
-});
+})
 
-export default function reducer(state = INITIAL_STATE, action) {
+export default function reducer(state = INITIAL_STATE(), action) {
   console.log(`reducer action=${JSON.stringify(action)} state=${JSON.stringify(state)}`)
   switch (action.type) {
     case Actions.ADD_PLAYER:
@@ -26,6 +26,11 @@ export default function reducer(state = INITIAL_STATE, action) {
       return Game.discardCard(state, action.player, action.card);
     case Actions.KNOCK:
       return Game.knock(state, action.player);
+    case Actions.ABANDON_GAME:
+      return Game.abandon(state, action.player);
+    // XXX: this shouldn't be allowed to be called remotely
+    case Actions.RESET_GAME:
+      return INITIAL_STATE();
     default:
       return state;
   }

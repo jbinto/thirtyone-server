@@ -297,3 +297,17 @@ export function knock(state, player) {
   return nextState
     .set('knockedByPlayer', player);
 }
+
+/**
+ * Returns a new state tree indicating a player abandoned the game.
+ * @param {Map} state The top-level Thirty-one game state tree.
+ * @param {string} player The name of the player that abandoned the game.
+ * @returns {Map} A new state tree with:
+ *   `gameState` set to GAME_ABANDONED
+ *   `abandoned_by` set to player's name
+ **/
+export function abandon(state, player) {
+  return state
+    .set('gameState', States.GAME_ABANDONED)
+    .set('abandonedBy', player)
+}

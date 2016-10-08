@@ -14,6 +14,7 @@ export const States = mirrorkey([
   'WAITING_FOR_PLAYER_TO_DISCARD',
   'THIRTY_ONE',
   'KNOCK_HAND_OVER',
+  'GAME_ABANDONED',
 ]);
 
 export const Actions = mirrorkey([
@@ -24,4 +25,6 @@ export const Actions = mirrorkey([
   'DRAW_DISCARD',
   'DISCARD_CARD',
   'KNOCK',
+  'ABANDON_GAME',
+  'RESET_GAME',
 ]);
