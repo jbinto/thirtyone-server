@@ -9,15 +9,12 @@ if (!process.env.PUSHER_URL) {
 
 const pusher = Pusher.forURL(process.env.PUSHER_URL)
 
-app.use('*', (req, res) => {
+app.get('/', (req, res) => {
   const payload = {
     'message': new Date().toString()
   }
-  pusher.trigger('my-channel', 'my-event', {
-    'message': new Date().toString()
-  });
+  pusher.trigger('my-channel', 'my-event', payload);
   res.send(`Pushed payload ${JSON.stringify(payload)}`)
-})
 
 app.listen(process.env.PORT || 8080, () => {
   console.log('Listening....')
