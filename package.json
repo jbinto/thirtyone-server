@@ -1,0 +1,22 @@
+{
+  "name": "thirtyone-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:jbinto/thirtyone-server.git",
+  "author": "Jesse Buchanan <hello@jessebuchanan.ca>",
+  "license": "MIT",
+  "scripts": {
+    "start": "ts-node src/index.ts",
+    "dev": "nodemon -x ts-node src/index.ts"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.8",
+    "@types/node": "^14.6.4",
+    "typescript": "^4.0.2"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "nodemon": "^2.0.4",
+    "ts-node": "^9.0.0"
+  }
+}
